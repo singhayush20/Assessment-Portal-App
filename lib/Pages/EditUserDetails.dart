@@ -20,7 +20,7 @@ class _EditUserDetailsState extends State<EditUserDetails> {
   bool _isFirstBuild = true;
   late UserProvider _userProvider;
   AppBar appBar = AppBar(
-    title: Text('Edit Profile'),
+    title: const Text('Edit Profile'),
   );
   @override
   Widget build(BuildContext context) {
@@ -68,7 +68,7 @@ class _EditUserDetailsState extends State<EditUserDetails> {
             ),
             Container(
               height: height * 0.1,
-              child: Text(
+              child: const Text(
                 "Re-enter the details you want to change and then click update",
                 style: TextStyle(
                   color: Colors.black,
@@ -81,14 +81,14 @@ class _EditUserDetailsState extends State<EditUserDetails> {
               // margin: EdgeInsets.symmetric(
               //   horizontal: 10,
               // ),
-              padding: EdgeInsets.symmetric(
+              padding: const EdgeInsets.symmetric(
                 horizontal: 10,
               ),
               decoration: BoxDecoration(
-                color: Color(0xFFE0EAE5),
+                color: const Color(0xFFE0EAE5),
                 border: Border.all(
                     color: Colors.black, width: 0.5, style: BorderStyle.solid),
-                borderRadius: BorderRadius.all(
+                borderRadius: const BorderRadius.all(
                   Radius.circular(20),
                 ),
               ),
@@ -131,7 +131,7 @@ class _EditUserDetailsState extends State<EditUserDetails> {
                                   ),
                                 ),
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 width: 10,
                               ),
                               Expanded(
@@ -250,14 +250,14 @@ class _EditUserDetailsState extends State<EditUserDetails> {
                     );
                     if (code == "2000") {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Registration Successful!'),
+                        const SnackBar(
+                          content: Text('User updated successfully!'),
                         ),
                       );
                       Navigator.pop(context);
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
+                        const SnackBar(
                           content: Text('User could not be updated'),
                         ),
                       );
@@ -265,7 +265,7 @@ class _EditUserDetailsState extends State<EditUserDetails> {
                     }
                   }
                 },
-                child: FittedBox(
+                child: const FittedBox(
                   child: Text(
                     'Update',
                     style: TextStyle(

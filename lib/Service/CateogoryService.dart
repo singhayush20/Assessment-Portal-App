@@ -40,7 +40,7 @@ class CategoryService {
       categoryList.forEach(
         (element) {
           quizzes.add(
-            new QuizModel.saveQuiz(
+            QuizModel.saveQuiz(
               element['quizId'],
               element['title'],
               element['description'],
@@ -54,5 +54,15 @@ class CategoryService {
       );
     }
     return quizzes;
+  }
+
+  Future<String> addNewCategory(
+      {required String title,
+      required String descp,
+      required String token,
+      required String adminId}) async {
+    Map<String, dynamic> result = await _api.addNewCategory(
+        title: title, descp: descp, token: token, adminId: adminId);
+    return result['code'];
   }
 }

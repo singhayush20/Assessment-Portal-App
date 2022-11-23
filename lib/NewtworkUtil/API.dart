@@ -25,6 +25,7 @@ class API {
   final getAllCategoriesUrl = "$domain/assessmentportal/category/";
   final getQuizzesForCategoryUrl =
       "$domain/assessmentportal/quiz/getByCategory";
+  final addNewCategoryUrl = "$domain/assessmentportal/category/create";
   final Dio _dio = Dio();
 
   Future<Map<String, dynamic>> loginUser(
@@ -180,6 +181,27 @@ class API {
     Response response = await _dio
         .get(getQuizzesForCategoryUrl + "/$categoryId", options: options);
     log('Fetched quizzes: $response');
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> addNewCategory(
+      {required String title,
+      required String descp,
+      required String token,
+      required String adminId}) async {
+    Map<String, dynamic> data = {
+      "title": title,
+      "description": descp,
+    };
+    Options options = Options(
+        validateStatus: (_) => true,
+        contentType: Headers.jsonContentType,
+        responseType: ResponseType.json,
+        headers: {HttpHeaders.authorizationHeader: token});
+    log('Adding new category for details: $data and by admin $adminId');
+    Response response = await _dio.post("$addNewCategoryUrl/$adminId",
+        data: data, options: options);
+    log('Add new category response: $response');
     return response.data;
   }
 }

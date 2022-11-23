@@ -2,10 +2,12 @@ import 'dart:developer';
 
 import 'package:assessmentportal/AppConstants/constants.dart';
 import 'package:assessmentportal/DataModel/CategoryModel.dart';
-import 'package:assessmentportal/Pages/QuizListPage.dart';
+import 'package:assessmentportal/Pages/AddCategory.dart';
+import 'package:assessmentportal/Pages/CategoryTile.dart';
 import 'package:assessmentportal/Service/CateogoryService.dart';
 import 'package:assessmentportal/provider/UserProvider.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,6 +25,8 @@ class _HomeScreenState extends State<HomeScreen> {
   late SharedPreferences _sharedPreferences;
   late bool _areCategoriesLoaded;
   List<CategoryModel> categories = [];
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+      GlobalKey<RefreshIndicatorState>();
   @override
   void initState() {
     super.initState();
@@ -39,6 +43,12 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadCategories() async {
+    if (_areCategoriesLoaded == true) {
+      //this is when user refreshes manually
+      setState(() {
+        _areCategoriesLoaded = false;
+      });
+    }
     categories = await _categoryService
         .getAllCategories(_sharedPreferences.getString(BEARER_TOKEN) ?? 'null');
     setState(() {
@@ -52,6 +62,25 @@ class _HomeScreenState extends State<HomeScreen> {
     userProvider = Provider.of<UserProvider>(context);
 
     return Scaffold(
+      floatingActionButton:
+          (userProvider.loadingStatus == LoadingStatus.COMPLETED &&
+                  userProvider.accountType != null &&
+                  userProvider.accountType == AccountType.ADMIN)
+              ? FloatingActionButton(
+                  backgroundColor: Colors.red,
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => AddCategory(),
+                      ),
+                    );
+                  },
+                  child: Icon(
+                    FontAwesomeIcons.plus,
+                  ),
+                )
+              : null,
       backgroundColor: Colors.white,
       body: LayoutBuilder(
         builder: (context, screenSize) {
@@ -103,18 +132,23 @@ class _HomeScreenState extends State<HomeScreen> {
                                 color: Colors.white,
                                 child: LayoutBuilder(
                                   builder: (context, constraints) {
-                                    return GridView.builder(
-                                      physics: BouncingScrollPhysics(),
-                                      itemCount: categories.length,
-                                      itemBuilder: (context, index) =>
-                                          CategoryTile(
-                                              index: index,
-                                              category: categories[index]),
-                                      gridDelegate:
-                                          SliverGridDelegateWithFixedCrossAxisCount(
-                                        crossAxisCount:
-                                            constraints.maxWidth > 700 ? 4 : 2,
-                                        // childAspectRatio: 5,
+                                    return RefreshIndicator(
+                                      onRefresh: _loadCategories,
+                                      child: GridView.builder(
+                                        physics: BouncingScrollPhysics(),
+                                        itemCount: categories.length,
+                                        itemBuilder: (context, index) =>
+                                            CategoryTile(
+                                                index: index,
+                                                category: categories[index]),
+                                        gridDelegate:
+                                            SliverGridDelegateWithFixedCrossAxisCount(
+                                          crossAxisCount:
+                                              constraints.maxWidth > 700
+                                                  ? 4
+                                                  : 2,
+                                          // childAspectRatio: 5,
+                                        ),
                                       ),
                                     );
                                   },
@@ -190,108 +224,6 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       ),
-    );
-  }
-}
-
-class CategoryTile extends StatelessWidget {
-  int index;
-  CategoryModel category;
-  CategoryTile({required this.index, required this.category});
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        return Padding(
-          padding: EdgeInsets.symmetric(
-            horizontal: 10,
-            vertical: 10,
-          ),
-          child: InkWell(
-            onTap: () {
-              log('Opening category $category ');
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => QuizListPage(category: category),
-                ),
-              );
-            },
-            child: Material(
-              borderRadius: BorderRadius.all(
-                Radius.circular(20),
-              ),
-              elevation: 5,
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(
-                      color: Colors.black,
-                      width: 0.5,
-                      style: BorderStyle.solid),
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(20),
-                  ),
-                  color: Colors.lightGreenAccent,
-                ),
-                alignment: Alignment.center,
-                child: LayoutBuilder(
-                  builder: (context, size) {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          height: size.maxHeight * 0.8,
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(
-                                  20,
-                                ),
-                                topRight: Radius.circular(
-                                  20,
-                                ),
-                              ),
-                              color: Colors.lightGreen,
-                            ),
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.only(
-                                topLeft: Radius.circular(
-                                  20,
-                                ),
-                                topRight: Radius.circular(
-                                  20,
-                                ),
-                              ),
-                              child: Image.asset(
-                                'images/category_default.jpg',
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                        ),
-                        Container(
-                          alignment: Alignment.center,
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 5,
-                          ),
-                          height: size.maxHeight * 0.2,
-                          child: Text(
-                            '${category.categoryTitle}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
-                ),
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 }

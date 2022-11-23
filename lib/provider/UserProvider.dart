@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class UserProvider with ChangeNotifier {
   SharedPreferences? sharedPreferences;
   late LoadingStatus loadingStatus;
-  late AccountType accountType;
+  late AccountType? accountType;
   var image;
   UserProvider() {}
   UserProvider.initialze(SharedPreferences sf) {
