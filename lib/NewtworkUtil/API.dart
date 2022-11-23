@@ -59,7 +59,7 @@ class API {
 
   Future<Map<String, dynamic>> registerNormalUser({required User user}) async {
     Map<String, dynamic> data = {
-      "username": user.userName,
+      "user_name": user.userName,
       "password": user.password,
       "firstName": user.firstName,
       "lastName": user.lastName,
@@ -74,7 +74,7 @@ class API {
 
   Future<Map<String, dynamic>> registerAdminUser({required User user}) async {
     Map<String, dynamic> data = {
-      "username": user.userName,
+      "user_name": user.userName,
       "password": user.password,
       "firstName": user.firstName,
       "lastName": user.lastName,
@@ -83,7 +83,9 @@ class API {
       "phone": user.phoneNumber,
       "profile": "sample.jpg"
     };
-    Response response = await _dio.post(registerNormalUserUrl, data: data);
+    log('Registering  user with data: $data');
+    Response response = await _dio.post(registerAdminUserUrl, data: data);
+    log('Register admin user response obtained: $response');
     return response.data;
   }
 

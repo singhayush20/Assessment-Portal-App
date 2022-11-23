@@ -10,7 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class UserProvider with ChangeNotifier {
   SharedPreferences? sharedPreferences;
   late LoadingStatus loadingStatus;
-
+  late AccountType accountType;
   var image;
   UserProvider() {}
   UserProvider.initialze(SharedPreferences sf) {
@@ -49,6 +49,13 @@ class UserProvider with ChangeNotifier {
           roles: userDetails['roles']);
       sharedPreferences!.setString(USERNAME, user!.userName);
       sharedPreferences!.setString(EMAIL, user!.email);
+      String accountType = user!.roles[0]['roleName'];
+      sharedPreferences!.setString(ROLE, accountType);
+      if (accountType == 'ROLE_NORMAL') {
+        this.accountType = AccountType.NORMAL;
+      } else {
+        this.accountType = AccountType.ADMIN;
+      }
       image = CachedNetworkImage(
         imageUrl: 'enter image url',
         placeholder: (context, url) =>

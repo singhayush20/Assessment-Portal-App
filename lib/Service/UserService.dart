@@ -16,9 +16,13 @@ class UserService {
     final User user =
         User(username, firstName, lastName, password, email, phone);
     if (userRole == 'STUDENT') {
+      log('STUDENT: Saving user with username: ${user.userName}');
+
       Map<String, dynamic> result = await api.registerNormalUser(user: user);
       return result;
     } else {
+      log('ADMIN: Saving user with username: ${user.userName}');
+
       Map<String, dynamic> result = await api.registerAdminUser(user: user);
       return result;
     }
@@ -29,6 +33,7 @@ class UserService {
     log("Loading user for email: $email");
     Map<String, dynamic> userDetails =
         await api.loadUserByEmail(username: email, token: token);
+    log("API: userDetails response: $userDetails");
     return userDetails;
   }
 

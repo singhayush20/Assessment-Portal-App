@@ -68,13 +68,22 @@ class _HomeScreenState extends State<HomeScreen> {
                           alignment: Alignment.centerLeft,
                           height: screenSize.maxHeight * 0.1,
                           child: FittedBox(
-                            child: Text(
-                              'Hello ${userProvider.user!.userName}, \nWhat would you like to learn today?',
-                              style: TextStyle(
-                                fontSize: 25,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
+                            child:
+                                (userProvider.accountType == AccountType.NORMAL)
+                                    ? Text(
+                                        'Hello ${userProvider.user!.userName}, \nWhat would you like to learn today?',
+                                        style: TextStyle(
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      )
+                                    : Text(
+                                        'Hello ${userProvider.user!.userName}, \nFollowing categories are available with us:',
+                                        style: TextStyle(
+                                          fontSize: 25,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
                           ),
                         ),
                         Container(

@@ -6,9 +6,9 @@ import 'package:assessmentportal/Pages/ProfilePage.dart';
 import 'package:assessmentportal/Register%20and%20Login/LoginPage.dart';
 import 'package:assessmentportal/provider/UserProvider.dart';
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 import '../Pages/HomeScreen.dart';
 
@@ -45,7 +45,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
     //this is to ensure that data is loaded only once
     log('Login Status of provider: ${userProvider.loadingStatus}');
     if (userProvider.loadingStatus == LoadingStatus.NOT_STARTED) {
-      log('loading user for email: ${userProvider.sharedPreferences!.getString(EMAIL)} ');
+      log('Bottom Navigation: loading user for email: ${userProvider.sharedPreferences!.getString(EMAIL)} ');
       log("Bottom Navigation: saving user details for current user");
       userProvider.saveUserDetails(
           email: userProvider.sharedPreferences!.getString(EMAIL) ?? "null",
