@@ -24,7 +24,9 @@ class CategoryTile extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => QuizListPage(category: category),
+                  builder: (context) => QuizListPage(
+                    category: category,
+                  ),
                 ),
               );
             },
@@ -64,31 +66,74 @@ class CategoryTile extends StatelessWidget {
                               ),
                               color: Colors.lightGreen,
                             ),
-                            child: ClipRRect(
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(
-                                  20,
+                            child: Stack(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: const BorderRadius.only(
+                                    topLeft: Radius.circular(
+                                      20,
+                                    ),
+                                    topRight: Radius.circular(
+                                      20,
+                                    ),
+                                  ),
+                                  child: Image.asset(
+                                    'images/category_default.jpg',
+                                    fit: BoxFit.cover,
+                                  ),
                                 ),
-                                topRight: Radius.circular(
-                                  20,
+                                Align(
+                                  alignment: Alignment.topRight,
+                                  child: PopupMenuButton(
+                                    // add icon, by default "3 dot" icon
+                                    // icon: Icon(Icons.book)
+                                    itemBuilder: (context) {
+                                      return [
+                                        const PopupMenuItem<int>(
+                                          value: 0,
+                                          child: Text("Delete"),
+                                        ),
+                                        // PopupMenuItem<int>(
+                                        //   value: 1,
+                                        //   child: Switch.adaptive(
+                                        //       activeColor: Colors.blueGrey.shade600,
+                                        //       activeTrackColor: Colors.grey.shade400,
+                                        //       inactiveThumbColor:
+                                        //       Colors.blueGrey.shade600,
+                                        //       inactiveTrackColor: Colors.grey.shade400,
+                                        //       splashRadius: 50.0,
+                                        //       value: _isQuizActive,
+                                        //       onChanged: (value) {
+                                        //         setState(() {
+                                        //           _isQuizActive = value;
+                                        //         });
+                                        //       }),
+                                        // ),
+                                        const PopupMenuItem<int>(
+                                          value: 1,
+                                          child: Text("Update"),
+                                        ),
+                                      ];
+                                    },
+                                    onSelected: (value) async {
+                                      if (value == 0) {
+                                      } else if (value == 1) {}
+                                    },
+                                  ),
                                 ),
-                              ),
-                              child: Image.asset(
-                                'images/category_default.jpg',
-                                fit: BoxFit.cover,
-                              ),
+                              ],
                             ),
                           ),
                         ),
                         Container(
                           alignment: Alignment.center,
-                          padding: EdgeInsets.symmetric(
+                          padding: const EdgeInsets.symmetric(
                             horizontal: 5,
                           ),
                           height: size.maxHeight * 0.3,
                           child: Text(
                             '${category.categoryTitle}',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
                           ),

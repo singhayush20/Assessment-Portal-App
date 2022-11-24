@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:assessmentportal/AppConstants/constants.dart';
+import 'package:assessmentportal/DataModel/QuizModel.dart';
 import 'package:assessmentportal/DataModel/UserModel.dart';
 import 'package:dio/dio.dart';
 
@@ -10,7 +11,6 @@ class API {
       "${domain}/assessmentportal/authenticate/verifyemail/sendotp";
   final verifyEmailOTPUrl =
       "${domain}/assessmentportal/authenticate/verifyemail/verify-otp";
-
   final registerNormalUserUrl =
       "${domain}/assessmentportal/authenticate/register/normal";
   final registerAdminUserUrl =
@@ -27,6 +27,10 @@ class API {
       "$domain/assessmentportal/quiz/getByCategory";
   final addNewCategoryUrl = "$domain/assessmentportal/category/create";
   final loadQuizzesAdminUrl = "$domain/assessmentportal/quiz/getByAdmin/";
+  final addNewQuizUrl = "$domain/assessmentportal/quiz/create";
+  final deleteQuizUrl = "$domain/assessmentportal/quiz/delete";
+  final updateQuizUrl = "$domain/assessmentportal/quiz/update";
+  final updateCategoryUrl = "$domain/as";
   final Dio _dio = Dio();
 
   Future<Map<String, dynamic>> loginUser(
@@ -226,6 +230,71 @@ class API {
     Response response = await _dio.get(loadQuizzesAdminUrl,
         queryParameters: data, options: options);
     log("Response for quizzes of admin: $response");
+    return response.data;
+  }
+
+  //for admin
+  Future<Map<String, dynamic>> addNewQuiz(
+      {required QuizModel quiz,
+      required String token,
+      required int userid}) async {
+    Options options = Options(
+        validateStatus: (_) => true,
+        contentType: Headers.jsonContentType,
+        responseType: ResponseType.json,
+        headers: {HttpHeaders.authorizationHeader: token});
+    Map<String, dynamic> data = {
+      "title": quiz.title,
+      "description": quiz.description,
+      "maxMarks": quiz.maxMarks,
+      "numberOfQuestions": quiz.numberOfQuestions.toString(),
+      "active": quiz.active,
+      "category": {"categoryId": quiz.categoryId}
+    };
+    Map<String, dynamic> queryParam = {"userid": userid};
+    log('Creating quiz for: data: $data and user: $userid');
+    Response response = await _dio.post(addNewQuizUrl,
+        queryParameters: queryParam, data: data, options: options);
+    log('New quiz response: $response');
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> deleteQuiz(
+      {required int quizid, required String token}) async {
+    Options options = Options(
+        validateStatus: (_) => true,
+        contentType: Headers.jsonContentType,
+        responseType: ResponseType.json,
+        headers: {HttpHeaders.authorizationHeader: token});
+    log('Deleting quiz with id: $quizid');
+    Response response =
+        await _dio.delete(deleteQuizUrl + "/$quizid", options: options);
+    log('Delete quiz response $response');
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> updateQuiz(
+      {required QuizModel quiz,
+      required String token,
+      required int userid}) async {
+    Options options = Options(
+        validateStatus: (_) => true,
+        contentType: Headers.jsonContentType,
+        responseType: ResponseType.json,
+        headers: {HttpHeaders.authorizationHeader: token});
+    Map<String, dynamic> data = {
+      "quizId": quiz.quizId,
+      "title": quiz.title,
+      "description": quiz.description,
+      "maxMarks": quiz.maxMarks,
+      "numberOfQuestions": quiz.numberOfQuestions.toString(),
+      "active": quiz.active
+    };
+    log('Updating quiz to ${data}');
+
+    Response response =
+        await _dio.put(updateQuizUrl, data: data, options: options);
+    log('Updated quiz response: $response');
     return response.data;
   }
 }

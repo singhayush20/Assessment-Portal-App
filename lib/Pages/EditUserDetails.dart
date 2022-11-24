@@ -168,34 +168,27 @@ class _EditUserDetailsState extends State<EditUserDetails> {
                         Container(
                           height: constraints.maxHeight * 0.2,
                           alignment: Alignment.center,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              //USERNAME
-                              Expanded(
-                                child: TextFormField(
-                                  controller: _usernameController,
-                                  obscureText: false,
-                                  cursorColor: Colors.black,
-                                  keyboardType: TextInputType.text,
-                                  validator: (value) {
-                                    if (value!.isEmpty) {
-                                      return 'Username cannot be empty';
-                                    } else {
-                                      return null;
-                                    }
-                                  },
-                                  decoration: const InputDecoration(
-                                    hintText: "Username",
-                                    prefixIcon: Icon(
-                                      FontAwesomeIcons.circleUser,
-                                      color: Colors.black,
-                                    ),
-                                  ),
+                          child: Expanded(
+                            child: TextFormField(
+                              controller: _usernameController,
+                              obscureText: false,
+                              cursorColor: Colors.black,
+                              keyboardType: TextInputType.text,
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return 'Username cannot be empty';
+                                } else {
+                                  return null;
+                                }
+                              },
+                              decoration: const InputDecoration(
+                                hintText: "Username",
+                                prefixIcon: Icon(
+                                  FontAwesomeIcons.circleUser,
+                                  color: Colors.black,
                                 ),
                               ),
-                            ],
+                            ),
                           ),
                         ),
                         //====PHONE NUMBER====
