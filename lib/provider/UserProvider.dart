@@ -49,9 +49,11 @@ class UserProvider with ChangeNotifier {
           roles: userDetails['roles']);
       sharedPreferences!.setString(USERNAME, user!.userName);
       sharedPreferences!.setString(EMAIL, user!.email);
+      sharedPreferences!.setInt(USER_ID, int.parse(user!.userId));
+
       String accountType = user!.roles[0]['roleName'];
       sharedPreferences!.setString(ROLE, accountType);
-      if (accountType == 'ROLE_NORMAL') {
+      if (accountType == ROLE_NORMAL) {
         this.accountType = AccountType.NORMAL;
       } else {
         this.accountType = AccountType.ADMIN;
@@ -112,6 +114,7 @@ class UserProvider with ChangeNotifier {
           roles: userDetails['roles']);
       sharedPreferences!.setString(USERNAME, this.user!.userName);
       sharedPreferences!.setString(EMAIL, this.user!.email);
+      sharedPreferences!.setInt(USER_ID, int.parse(this.user!.userId));
       image = CachedNetworkImage(
         imageUrl: 'enter image url',
         placeholder: (context, url) =>

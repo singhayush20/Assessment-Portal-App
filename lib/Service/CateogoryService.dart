@@ -28,6 +28,7 @@ class CategoryService {
     return categories;
   }
 
+  //for normal
   Future<List<QuizModel>> getAllQuizzesByCategory(
       String token, int categoryId) async {
     List<QuizModel> quizzes = [];
@@ -35,6 +36,38 @@ class CategoryService {
         token: token, categoryId: categoryId);
     log('CategoryService: getAllQuizzes by category result: $result');
     String code = result['code'];
+    if (code == '2000') {
+      List<dynamic> categoryList = result['data'];
+      categoryList.forEach(
+        (element) {
+          quizzes.add(
+            QuizModel.saveQuiz(
+              element['quizId'],
+              element['title'],
+              element['description'],
+              element['maxMarks'],
+              element['active'],
+              element['category']['categoryId'],
+              int.parse(element['numberOfQuestions']),
+            ),
+          );
+        },
+      );
+    }
+    return quizzes;
+  }
+
+  //for admin
+  Future<List<QuizModel>> getAllQuizzesByAdminAndCategory(
+      {required int adminid,
+      required int categoryid,
+      required String token}) async {
+    log("CategoryService: loading quizzes by admin $adminid and category: $categoryid");
+    Map<String, dynamic> result = await _api.getAllQuizzesByAdminAndCategory(
+        adminid: adminid, categoryid: categoryid, token: token);
+    log('CategoryService: getAllQuizzes by category result: $result');
+    String code = result['code'];
+    List<QuizModel> quizzes = [];
     if (code == '2000') {
       List<dynamic> categoryList = result['data'];
       categoryList.forEach(

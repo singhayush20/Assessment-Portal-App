@@ -1,10 +1,12 @@
-final String domain = "https://67ed-14-139-240-85.in.ngrok.io";
-final BEARER_TOKEN = "BEARER TOKEN";
-final IS_LOGGED_IN = "isLoggedIn";
-final Bearer = "Bearer ";
-final USERNAME = "username";
-final EMAIL = "email";
-final ROLE = "USER_ROLE";
+const String domain = "https://c4b7-14-139-240-85.in.ngrok.io";
+const BEARER_TOKEN = "BEARER TOKEN";
+const IS_LOGGED_IN = "isLoggedIn";
+const Bearer = "Bearer ";
+const USERNAME = "username";
+const EMAIL = "email";
+const ROLE = "USER_ROLE";
+const ROLE_NORMAL = 'ROLE_NORMAL';
+const USER_ID = "USER_ID";
 
 enum LoadingStatus { NOT_STARTED, LOADING, COMPLETED }
 

@@ -39,9 +39,17 @@ class _QuizListPageState extends State<QuizListPage> {
   }
 
   Future<void> _loadCategories() async {
-    quizzes = await _categoryService.getAllQuizzesByCategory(
-        _sharedPreferences.getString(BEARER_TOKEN) ?? 'null',
-        widget.category.categoryId);
+    if (_sharedPreferences.getString(ROLE) == ROLE_NORMAL) {
+      quizzes = await _categoryService.getAllQuizzesByCategory(
+          _sharedPreferences.getString(BEARER_TOKEN) ?? 'null',
+          widget.category.categoryId);
+    } else {
+      quizzes = await _categoryService.getAllQuizzesByAdminAndCategory(
+        adminid: _sharedPreferences.getInt(USER_ID) ?? 0,
+        categoryid: widget.category.categoryId,
+        token: _sharedPreferences.getString(BEARER_TOKEN) ?? 'null',
+      );
+    }
     setState(() {
       log('Setting loaded loaded to true');
       _areQuizzesLoaded = true;
@@ -63,81 +71,78 @@ class _QuizListPageState extends State<QuizListPage> {
         padding: EdgeInsets.symmetric(
           horizontal: width * 0.05,
         ),
-        child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              Container(
-                alignment: Alignment.centerLeft,
-                height: height * 0.1,
-                child: Text(
-                  widget.category.categoryDescp,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black,
-                    fontSize: 20,
-                  ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              alignment: Alignment.centerLeft,
+              height: height * 0.1,
+              child: Text(
+                widget.category.categoryDescp,
+                style: TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black,
+                  fontSize: 20,
                 ),
               ),
-              (_areQuizzesLoaded == true)
-                  ? ((quizzes.length > 0)
-                      ? Container(
-                          height: height * 0.85,
-                          child: ListView.builder(
-                            physics: NeverScrollableScrollPhysics(),
-                            itemCount: quizzes.length,
-                            itemBuilder: (BuildContext context, int index) {
-                              return ListItem(quiz: quizzes[index]);
-                            },
-                          ),
-                        )
-                      : Container(
-                          height: height * 0.85,
-                          alignment: Alignment.center,
-                          child: const Text(
-                            'No Quiz Found',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                            ),
-                          ),
-                        ))
-                  : Center(
-                      child: Container(
-                        color: Colors.white,
-                        height: height * 0.8,
-                        alignment: Alignment.center,
-                        child: Container(
-                          height: 80,
-                          width: 80,
-                          child: const LoadingIndicator(
-                              indicatorType: Indicator.lineScale,
-                              colors: [
-                                Colors.purple,
-                                Colors.indigo,
-                                Colors.blue,
-                                Colors.green,
-                                Colors.red,
-                              ],
-
-                              /// Optional, The color collections
-                              strokeWidth: 1,
-
-                              /// Optional, The stroke of the line, only applicable to widget which contains line
-                              backgroundColor: Colors.white,
-
-                              /// Optional, Background of the widget
-                              pathBackgroundColor: Colors.white
-
-                              /// Optional, the stroke backgroundColor
-
-                              ),
+            ),
+            (_areQuizzesLoaded == true)
+                ? ((quizzes.length > 0)
+                    ? Container(
+                        height: height * 0.9,
+                        child: ListView.builder(
+                          physics: BouncingScrollPhysics(),
+                          itemCount: quizzes.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return ListItem(quiz: quizzes[index]);
+                          },
                         ),
+                      )
+                    : Container(
+                        height: height * 0.85,
+                        alignment: Alignment.center,
+                        child: const Text(
+                          'No Quiz Found',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ))
+                : Center(
+                    child: Container(
+                      color: Colors.white,
+                      height: height * 0.8,
+                      alignment: Alignment.center,
+                      child: Container(
+                        height: 80,
+                        width: 80,
+                        child: const LoadingIndicator(
+                            indicatorType: Indicator.lineScale,
+                            colors: [
+                              Colors.purple,
+                              Colors.indigo,
+                              Colors.blue,
+                              Colors.green,
+                              Colors.red,
+                            ],
+
+                            /// Optional, The color collections
+                            strokeWidth: 1,
+
+                            /// Optional, The stroke of the line, only applicable to widget which contains line
+                            backgroundColor: Colors.white,
+
+                            /// Optional, Background of the widget
+                            pathBackgroundColor: Colors.white
+
+                            /// Optional, the stroke backgroundColor
+
+                            ),
                       ),
-                    )
-            ],
-          ),
+                    ),
+                  ),
+          ],
         ),
       ),
     );

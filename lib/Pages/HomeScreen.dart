@@ -25,8 +25,6 @@ class _HomeScreenState extends State<HomeScreen> {
   late SharedPreferences _sharedPreferences;
   late bool _areCategoriesLoaded;
   List<CategoryModel> categories = [];
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-      GlobalKey<RefreshIndicatorState>();
   @override
   void initState() {
     super.initState();
@@ -118,13 +116,22 @@ class _HomeScreenState extends State<HomeScreen> {
                         Container(
                           alignment: Alignment.centerLeft,
                           height: screenSize.maxHeight * 0.1,
-                          child: Text(
-                            'Choose a category below and boost your skills',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
+                          child:
+                              (userProvider.accountType == AccountType.NORMAL)
+                                  ? const Text(
+                                      'Choose a category below and boost your skills',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    )
+                                  : const Text(
+                                      'Choose an available category or create a new one',
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
                         ),
                         (_areCategoriesLoaded == true)
                             ? Container(
@@ -162,7 +169,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                   child: Container(
                                     height: 80,
                                     width: 80,
-                                    child: LoadingIndicator(
+                                    child: const LoadingIndicator(
                                         indicatorType: Indicator.lineScale,
                                         colors: [
                                           Colors.purple,
@@ -195,7 +202,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: Colors.white,
                             height: 100,
                             width: 100,
-                            child: LoadingIndicator(
+                            child: const LoadingIndicator(
                                 indicatorType: Indicator.ballPulse,
                                 colors: [Colors.red, Colors.blue, Colors.green],
 
