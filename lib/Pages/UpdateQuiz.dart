@@ -49,7 +49,7 @@ class _UpdateQuizPageState extends State<UpdateQuizPage> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text(
-          'Add new Quiz',
+          'Update Quiz',
         ),
       ),
       body: Container(

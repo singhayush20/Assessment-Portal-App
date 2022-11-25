@@ -6,9 +6,10 @@ import 'package:assessmentportal/NewtworkUtil/API.dart';
 
 class CategoryService {
   API _api = API();
-  Future<List<CategoryModel>> getAllCategories(String token) async {
+  Future<List<CategoryModel>> getAllCategories(String token, int userid) async {
     List<CategoryModel> categories = [];
-    Map<String, dynamic> result = await _api.getAllCategories(token: token);
+    Map<String, dynamic> result =
+        await _api.getAllCategories(token: token, userid: userid);
     log('CategoryService: getAllCategories result: $result');
     String code = result['code'];
     if (code == '2000') {
@@ -96,6 +97,24 @@ class CategoryService {
       required String adminId}) async {
     Map<String, dynamic> result = await _api.addNewCategory(
         title: title, descp: descp, token: token, adminId: adminId);
+    return result['code'];
+  }
+
+  Future<String> deleteCategory(
+      {required String token, required int categoryId}) async {
+    Map<String, dynamic> result =
+        await _api.deleteCategory(categoryId: categoryId, token: token);
+    return result['code'];
+  }
+
+  Future<String> updateQuiz(
+      {required String token,
+      required String title,
+      required String description,
+      required int categoryId}) async {
+    CategoryModel categoryModel = CategoryModel(categoryId, title, description);
+    Map<String, dynamic> result =
+        await _api.updateCategory(category: categoryModel, token: token);
     return result['code'];
   }
 }

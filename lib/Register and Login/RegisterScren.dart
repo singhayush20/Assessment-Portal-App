@@ -57,13 +57,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: Column(
                       children: [
                         SizedBox(
-                          height: constraints.maxHeight * 0.2,
+                          height: constraints.maxHeight * 0.1,
                         ),
                         Container(
-                          height: constraints.maxHeight * 0.2,
+                          height: constraints.maxHeight * 0.4,
                           child: Form(
                             key: _formKey,
                             child: TextFormField(
+                              maxLines: 2,
                               controller: _emailController,
                               obscureText: false,
                               cursorColor: Colors.black,
@@ -90,7 +91,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                         SizedBox(
-                          height: constraints.maxHeight * 0.2,
+                          height: constraints.maxHeight * 0.1,
                         ),
                         Container(
                           height: constraints.maxHeight * 0.2,
@@ -126,7 +127,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           ),
                         ),
                         SizedBox(
-                          height: constraints.maxHeight * 0.2,
+                          height: constraints.maxHeight * 0.1,
                         ),
                       ],
                     ),

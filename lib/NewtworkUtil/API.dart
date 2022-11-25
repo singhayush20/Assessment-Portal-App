@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:assessmentportal/AppConstants/constants.dart';
+import 'package:assessmentportal/DataModel/CategoryModel.dart';
 import 'package:assessmentportal/DataModel/QuizModel.dart';
 import 'package:assessmentportal/DataModel/UserModel.dart';
 import 'package:dio/dio.dart';
@@ -22,7 +23,7 @@ class API {
   final loginUserUrl = "$domain/assessmentportal/authenticate/login";
   final loadUserByEmailUrl = "$domain/assessmentportal/users/";
   final updateUserUrl = "$domain/assessmentportal/users/update";
-  final getAllCategoriesUrl = "$domain/assessmentportal/category/";
+  final getAllCategoriesUrl = "$domain/assessmentportal/category/all";
   final getQuizzesForCategoryUrl =
       "$domain/assessmentportal/quiz/getByCategory";
   final addNewCategoryUrl = "$domain/assessmentportal/category/create";
@@ -30,7 +31,8 @@ class API {
   final addNewQuizUrl = "$domain/assessmentportal/quiz/create";
   final deleteQuizUrl = "$domain/assessmentportal/quiz/delete";
   final updateQuizUrl = "$domain/assessmentportal/quiz/update";
-  final updateCategoryUrl = "$domain/as";
+  final deleteCategoryUrl = '$domain/assessmentportal/category/delete';
+  final updateCategoryUrl = "$domain/assessmentportal/category/update";
   final Dio _dio = Dio();
 
   Future<Map<String, dynamic>> loginUser(
@@ -163,14 +165,16 @@ class API {
     return response.data;
   }
 
-  Future<Map<String, dynamic>> getAllCategories({required String token}) async {
+  Future<Map<String, dynamic>> getAllCategories(
+      {required String token, required int userid}) async {
     Options options = Options(
         validateStatus: (_) => true,
         contentType: Headers.jsonContentType,
         responseType: ResponseType.json,
         headers: {HttpHeaders.authorizationHeader: token});
     log('Fetching all category details for $token');
-    Response response = await _dio.get(getAllCategoriesUrl, options: options);
+    Response response =
+        await _dio.get(getAllCategoriesUrl + "/$userid", options: options);
     log("get all categories response: $response");
     return response.data;
   }
@@ -199,6 +203,7 @@ class API {
     Map<String, dynamic> data = {
       "title": title,
       "description": descp,
+      "adminUser": {"userId": adminId}
     };
     Options options = Options(
         validateStatus: (_) => true,
@@ -233,6 +238,42 @@ class API {
     return response.data;
   }
 
+  //admin
+  Future<Map<String, dynamic>> deleteCategory(
+      {required int categoryId, required String token}) async {
+    Options options = Options(
+        validateStatus: (_) => true,
+        contentType: Headers.jsonContentType,
+        responseType: ResponseType.json,
+        headers: {HttpHeaders.authorizationHeader: token});
+
+    log('deleting category with id $categoryId');
+    Response response =
+        await _dio.delete(deleteCategoryUrl + "/$categoryId", options: options);
+    log('Delete category response: $response');
+    return response.data;
+  }
+
+  //admin
+  Future<Map<String, dynamic>> updateCategory(
+      {required CategoryModel category, required String token}) async {
+    Options options = Options(
+        validateStatus: (_) => true,
+        contentType: Headers.jsonContentType,
+        responseType: ResponseType.json,
+        headers: {HttpHeaders.authorizationHeader: token});
+
+    Map<String, dynamic> data = {
+      "categoryId": category.categoryId,
+      "title": category.categoryTitle,
+      "description": category.categoryDescp
+    };
+    Response response =
+        await _dio.put(updateCategoryUrl, options: options, data: data);
+    log('update category response: $response');
+    return response.data;
+  }
+
   //for admin
   Future<Map<String, dynamic>> addNewQuiz(
       {required QuizModel quiz,
@@ -249,7 +290,7 @@ class API {
       "maxMarks": quiz.maxMarks,
       "numberOfQuestions": quiz.numberOfQuestions.toString(),
       "active": quiz.active,
-      "category": {"categoryId": quiz.categoryId}
+      "category": {"categoryId": quiz.categoryId},
     };
     Map<String, dynamic> queryParam = {"userid": userid};
     log('Creating quiz for: data: $data and user: $userid');

@@ -47,8 +47,10 @@ class _HomeScreenState extends State<HomeScreen> {
         _areCategoriesLoaded = false;
       });
     }
-    categories = await _categoryService
-        .getAllCategories(_sharedPreferences.getString(BEARER_TOKEN) ?? 'null');
+
+    categories = await _categoryService.getAllCategories(
+        _sharedPreferences.getString(BEARER_TOKEN) ?? 'null',
+        _sharedPreferences.getInt(USER_ID) ?? 0);
     setState(() {
       log('Setting categories loaded to true');
       _areCategoriesLoaded = true;
@@ -137,29 +139,42 @@ class _HomeScreenState extends State<HomeScreen> {
                             ? Container(
                                 height: screenSize.maxHeight * 0.8,
                                 color: Colors.white,
-                                child: LayoutBuilder(
-                                  builder: (context, constraints) {
-                                    return RefreshIndicator(
-                                      onRefresh: _loadCategories,
-                                      child: GridView.builder(
-                                        physics: BouncingScrollPhysics(),
-                                        itemCount: categories.length,
-                                        itemBuilder: (context, index) =>
-                                            CategoryTile(
+                                child: (categories.length > 0)
+                                    ? LayoutBuilder(
+                                        builder: (context, constraints) {
+                                          return RefreshIndicator(
+                                            onRefresh: _loadCategories,
+                                            child: GridView.builder(
+                                              physics: BouncingScrollPhysics(),
+                                              itemCount: categories.length,
+                                              itemBuilder: (context, index) =>
+                                                  CategoryTile(
                                                 index: index,
-                                                category: categories[index]),
-                                        gridDelegate:
-                                            SliverGridDelegateWithFixedCrossAxisCount(
-                                          crossAxisCount:
-                                              constraints.maxWidth > 700
-                                                  ? 4
-                                                  : 2,
-                                          // childAspectRatio: 5,
+                                                category: categories[index],
+                                                token: _sharedPreferences
+                                                        .getString(
+                                                            BEARER_TOKEN) ??
+                                                    'null',
+                                              ),
+                                              gridDelegate:
+                                                  SliverGridDelegateWithFixedCrossAxisCount(
+                                                crossAxisCount:
+                                                    constraints.maxWidth > 700
+                                                        ? 4
+                                                        : 2,
+                                                // childAspectRatio: 5,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      )
+                                    : Center(
+                                        child: Text(
+                                          'No categories found',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w700),
                                         ),
                                       ),
-                                    );
-                                  },
-                                ),
                               )
                             : Center(
                                 child: Container(

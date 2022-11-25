@@ -2,12 +2,16 @@ import 'dart:developer';
 
 import 'package:assessmentportal/DataModel/CategoryModel.dart';
 import 'package:assessmentportal/Pages/QuizListPage.dart';
+import 'package:assessmentportal/Pages/UpdateCategory.dart';
+import 'package:assessmentportal/Service/CateogoryService.dart';
 import 'package:flutter/material.dart';
 
 class CategoryTile extends StatelessWidget {
   int index;
   CategoryModel category;
-  CategoryTile({required this.index, required this.category});
+  String token;
+  CategoryTile(
+      {required this.index, required this.category, required this.token});
 
   @override
   Widget build(BuildContext context) {
@@ -117,7 +121,45 @@ class CategoryTile extends StatelessWidget {
                                     },
                                     onSelected: (value) async {
                                       if (value == 0) {
-                                      } else if (value == 1) {}
+                                        //delete category
+                                        CategoryService categoryService =
+                                            CategoryService();
+                                        String code = await categoryService
+                                            .deleteCategory(
+                                                token: token,
+                                                categoryId:
+                                                    category.categoryId);
+                                        if (code == '2000') {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                  'Category deleted successfully'),
+                                            ),
+                                          );
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                              content:
+                                                  Text('Category not deleted'),
+                                            ),
+                                          );
+                                        }
+                                      } else if (value == 1) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) =>
+                                                UpdateCategory(
+                                              token: token,
+                                              title: category.categoryTitle,
+                                              descp: category.categoryDescp,
+                                              id: category.categoryId,
+                                            ),
+                                          ),
+                                        );
+                                      }
                                     },
                                   ),
                                 ),
