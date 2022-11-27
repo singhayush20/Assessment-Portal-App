@@ -87,6 +87,16 @@ class CategoryTile extends StatelessWidget {
                                   ),
                                 ),
                                 Align(
+                                  alignment: Alignment.bottomCenter,
+                                  child: Text(
+                                    'Category id: ${category.categoryId}',
+                                    style: TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                                Align(
                                   alignment: Alignment.topRight,
                                   child: PopupMenuButton(
                                     // add icon, by default "3 dot" icon

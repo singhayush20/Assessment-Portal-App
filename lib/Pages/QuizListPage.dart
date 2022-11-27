@@ -22,7 +22,7 @@ class QuizListPage extends StatefulWidget {
 }
 
 class _QuizListPageState extends State<QuizListPage> {
-  late SharedPreferences _sharedPreferences;
+  SharedPreferences? _sharedPreferences;
   List<QuizModel> quizzes = [];
   late CategoryService _categoryService;
   bool _areQuizzesLoaded = false;
@@ -44,15 +44,16 @@ class _QuizListPageState extends State<QuizListPage> {
     setState(() {
       _areQuizzesLoaded = false;
     });
-    if (_sharedPreferences.getString(ROLE) == ROLE_NORMAL) {
+    if (_sharedPreferences != null &&
+        _sharedPreferences!.getString(ROLE) == ROLE_NORMAL) {
       quizzes = await _categoryService.getAllQuizzesByCategory(
-          _sharedPreferences.getString(BEARER_TOKEN) ?? 'null',
+          _sharedPreferences!.getString(BEARER_TOKEN) ?? 'null',
           widget.category.categoryId);
     } else {
       quizzes = await _categoryService.getAllQuizzesByAdminAndCategory(
-        adminid: _sharedPreferences.getInt(USER_ID) ?? 0,
+        adminid: _sharedPreferences!.getInt(USER_ID) ?? 0,
         categoryid: widget.category.categoryId,
-        token: _sharedPreferences.getString(BEARER_TOKEN) ?? 'null',
+        token: _sharedPreferences!.getString(BEARER_TOKEN) ?? 'null',
       );
     }
     setState(() {
@@ -71,7 +72,8 @@ class _QuizListPageState extends State<QuizListPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.category.categoryTitle),
-        actions: (_sharedPreferences.getString(ROLE) != ROLE_NORMAL)
+        actions: (_sharedPreferences != null &&
+                _sharedPreferences!.getString(ROLE) != ROLE_NORMAL)
             ? [
                 Container(
                   margin: const EdgeInsets.only(
@@ -86,10 +88,11 @@ class _QuizListPageState extends State<QuizListPage> {
                         context,
                         MaterialPageRoute(
                           builder: (context) => AddQuizPage(
-                            userid: _sharedPreferences.getInt(USER_ID) ?? 0,
+                            userid: _sharedPreferences!.getInt(USER_ID) ?? 0,
                             categoryid: widget.category.categoryId ?? 0,
-                            token: _sharedPreferences.getString(BEARER_TOKEN) ??
-                                'null',
+                            token:
+                                _sharedPreferences!.getString(BEARER_TOKEN) ??
+                                    'null',
                           ),
                         ),
                       );
@@ -160,7 +163,7 @@ class _QuizListPageState extends State<QuizListPage> {
                                         FontAwesomeIcons.paperclip,
                                       ),
                                     ),
-                                    trailing: (_sharedPreferences
+                                    trailing: (_sharedPreferences!
                                                 .getString(ROLE) ==
                                             ROLE_NORMAL)
                                         ? Container(
@@ -210,7 +213,7 @@ class _QuizListPageState extends State<QuizListPage> {
                                                     .deleteQuiz(
                                                         quizid: quizzes[index]
                                                             .quizId,
-                                                        token: _sharedPreferences
+                                                        token: _sharedPreferences!
                                                                 .getString(
                                                                     BEARER_TOKEN) ??
                                                             'null');
@@ -240,7 +243,7 @@ class _QuizListPageState extends State<QuizListPage> {
                                                   context,
                                                   MaterialPageRoute(
                                                     builder: (context) => UpdateQuizPage(
-                                                        userid: _sharedPreferences
+                                                        userid: _sharedPreferences!
                                                                 .getInt(
                                                                     USER_ID) ??
                                                             0,
@@ -248,7 +251,7 @@ class _QuizListPageState extends State<QuizListPage> {
                                                                 .category
                                                                 .categoryId ??
                                                             0,
-                                                        token: _sharedPreferences
+                                                        token: _sharedPreferences!
                                                                 .getString(
                                                                     BEARER_TOKEN) ??
                                                             'null',

@@ -33,6 +33,10 @@ class API {
   final updateQuizUrl = "$domain/assessmentportal/quiz/update";
   final deleteCategoryUrl = '$domain/assessmentportal/category/delete';
   final updateCategoryUrl = "$domain/assessmentportal/category/update";
+  final enrollInCateogryUrl =
+      "$domain/assessmentportal/users/enrolledcategories/all/add";
+  final getAllEnrolledCategoriesUrl =
+      '$domain/assessmentportal/users/enrolledcategories/all';
   final Dio _dio = Dio();
 
   Future<Map<String, dynamic>> loginUser(
@@ -172,10 +176,24 @@ class API {
         contentType: Headers.jsonContentType,
         responseType: ResponseType.json,
         headers: {HttpHeaders.authorizationHeader: token});
-    log('Fetching all category details for $token');
+    log('Fetching all category details for $token $userid');
     Response response =
         await _dio.get(getAllCategoriesUrl + "/$userid", options: options);
     log("get all categories response: $response");
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> getAllEnrolledCategories(
+      {required String token, required int userid}) async {
+    Options options = Options(
+        validateStatus: (_) => true,
+        contentType: Headers.jsonContentType,
+        responseType: ResponseType.json,
+        headers: {HttpHeaders.authorizationHeader: token});
+    log('Fetching all category details for normal user $token $userid');
+    Response response = await _dio.get(getAllEnrolledCategoriesUrl + "/$userid",
+        options: options);
+    log("get all categories response for normal user: $response");
     return response.data;
   }
 
@@ -336,6 +354,26 @@ class API {
     Response response =
         await _dio.put(updateQuizUrl, data: data, options: options);
     log('Updated quiz response: $response');
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> enrollUserInCategory(
+      {required int userid,
+      required int categoryid,
+      required String token}) async {
+    Map<String, dynamic> data = {
+      'userid': userid,
+      'categoryid': categoryid,
+    };
+    Options options = Options(
+        validateStatus: (_) => true,
+        contentType: Headers.jsonContentType,
+        responseType: ResponseType.json,
+        headers: {HttpHeaders.authorizationHeader: token});
+    log('enroll user with details: $data');
+    Response response = await _dio.put(enrollInCateogryUrl,
+        queryParameters: data, options: options);
+    log('enroll user response: $response');
     return response.data;
   }
 }

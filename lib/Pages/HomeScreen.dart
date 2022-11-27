@@ -4,6 +4,7 @@ import 'package:assessmentportal/AppConstants/constants.dart';
 import 'package:assessmentportal/DataModel/CategoryModel.dart';
 import 'package:assessmentportal/Pages/AddCategory.dart';
 import 'package:assessmentportal/Pages/CategoryTile.dart';
+import 'package:assessmentportal/Pages/EnrollCategorypage.dart';
 import 'package:assessmentportal/Service/CateogoryService.dart';
 import 'package:assessmentportal/provider/UserProvider.dart';
 import 'package:flutter/material.dart';
@@ -50,7 +51,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     categories = await _categoryService.getAllCategories(
         _sharedPreferences.getString(BEARER_TOKEN) ?? 'null',
-        _sharedPreferences.getInt(USER_ID) ?? 0);
+        _sharedPreferences.getInt(USER_ID) ?? 0,
+        _sharedPreferences.getString(ROLE) ?? 'NULL');
     setState(() {
       log('Setting categories loaded to true');
       _areCategoriesLoaded = true;
@@ -63,18 +65,33 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       floatingActionButton:
-          (userProvider.loadingStatus == LoadingStatus.COMPLETED &&
-                  userProvider.accountType != null &&
-                  userProvider.accountType == AccountType.ADMIN)
+          // (userProvider.loadingStatus == LoadingStatus.COMPLETED &&
+          //         userProvider.accountType != null &&
+          //         userProvider.accountType == AccountType.ADMIN)
+          (userProvider.loadingStatus == LoadingStatus.COMPLETED)
               ? FloatingActionButton(
                   backgroundColor: Colors.red,
                   onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AddCategory(),
-                      ),
-                    );
+                    if (userProvider.accountType != null &&
+                        userProvider.accountType == AccountType.ADMIN) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddCategory(),
+                        ),
+                      );
+                    } else {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => EnrollCategorypage(
+                              userid: userProvider.user!.userId,
+                              token: userProvider.sharedPreferences!
+                                      .getString(BEARER_TOKEN) ??
+                                  'null'),
+                        ),
+                      );
+                    }
                   },
                   child: Icon(
                     FontAwesomeIcons.plus,
@@ -90,61 +107,61 @@ class _HomeScreenState extends State<HomeScreen> {
                 horizontal: screenSize.maxWidth * 0.05,
               ),
               child: (userProvider.loadingStatus == LoadingStatus.COMPLETED)
-                  ? Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Container(
-                          alignment: Alignment.centerLeft,
-                          height: screenSize.maxHeight * 0.1,
-                          child: FittedBox(
+                  ? RefreshIndicator(
+                      onRefresh: _loadCategories,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            height: screenSize.maxHeight * 0.1,
+                            child: FittedBox(
+                              child: (userProvider.accountType ==
+                                      AccountType.NORMAL)
+                                  ? Text(
+                                      'Hello ${userProvider.user!.userName}, \nWhat would you like to learn today?',
+                                      style: TextStyle(
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    )
+                                  : Text(
+                                      'Hello ${userProvider.user!.userName}, \nFollowing categories are available with us:',
+                                      style: TextStyle(
+                                        fontSize: 25,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                            ),
+                          ),
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            height: screenSize.maxHeight * 0.1,
                             child:
                                 (userProvider.accountType == AccountType.NORMAL)
-                                    ? Text(
-                                        'Hello ${userProvider.user!.userName}, \nWhat would you like to learn today?',
+                                    ? const Text(
+                                        'Choose a category below and boost your skills',
                                         style: TextStyle(
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.w600,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w400,
                                         ),
                                       )
-                                    : Text(
-                                        'Hello ${userProvider.user!.userName}, \nFollowing categories are available with us:',
+                                    : const Text(
+                                        'Choose an available category or create a new one',
                                         style: TextStyle(
-                                          fontSize: 25,
-                                          fontWeight: FontWeight.w600,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.w400,
                                         ),
                                       ),
                           ),
-                        ),
-                        Container(
-                          alignment: Alignment.centerLeft,
-                          height: screenSize.maxHeight * 0.1,
-                          child:
-                              (userProvider.accountType == AccountType.NORMAL)
-                                  ? const Text(
-                                      'Choose a category below and boost your skills',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    )
-                                  : const Text(
-                                      'Choose an available category or create a new one',
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                        ),
-                        (_areCategoriesLoaded == true)
-                            ? Container(
-                                height: screenSize.maxHeight * 0.8,
-                                color: Colors.white,
-                                child: (categories.length > 0)
-                                    ? LayoutBuilder(
-                                        builder: (context, constraints) {
-                                          return RefreshIndicator(
-                                            onRefresh: _loadCategories,
-                                            child: GridView.builder(
+                          (_areCategoriesLoaded == true)
+                              ? Container(
+                                  height: screenSize.maxHeight * 0.8,
+                                  color: Colors.white,
+                                  child: (categories.length > 0)
+                                      ? LayoutBuilder(
+                                          builder: (context, constraints) {
+                                            return GridView.builder(
                                               physics: BouncingScrollPhysics(),
                                               itemCount: categories.length,
                                               itemBuilder: (context, index) =>
@@ -164,52 +181,52 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         : 2,
                                                 // childAspectRatio: 5,
                                               ),
-                                            ),
-                                          );
-                                        },
-                                      )
-                                    : Center(
-                                        child: Text(
-                                          'No categories found',
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.w700),
+                                            );
+                                          },
+                                        )
+                                      : Center(
+                                          child: Text(
+                                            'No categories found',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.w700),
+                                          ),
                                         ),
-                                      ),
-                              )
-                            : Center(
-                                child: Container(
-                                  color: Colors.white,
-                                  height: screenSize.maxHeight * 0.8,
-                                  alignment: Alignment.center,
+                                )
+                              : Center(
                                   child: Container(
-                                    height: 80,
-                                    width: 80,
-                                    child: const LoadingIndicator(
-                                        indicatorType: Indicator.lineScale,
-                                        colors: [
-                                          Colors.purple,
-                                          Colors.indigo,
-                                          Colors.blue,
-                                          Colors.green,
-                                          Colors.red,
-                                        ],
+                                    color: Colors.white,
+                                    height: screenSize.maxHeight * 0.8,
+                                    alignment: Alignment.center,
+                                    child: Container(
+                                      height: 80,
+                                      width: 80,
+                                      child: const LoadingIndicator(
+                                          indicatorType: Indicator.lineScale,
+                                          colors: [
+                                            Colors.purple,
+                                            Colors.indigo,
+                                            Colors.blue,
+                                            Colors.green,
+                                            Colors.red,
+                                          ],
 
-                                        /// Optional, The color collections
-                                        strokeWidth: 1,
+                                          /// Optional, The color collections
+                                          strokeWidth: 1,
 
-                                        /// Optional, The stroke of the line, only applicable to widget which contains line
-                                        backgroundColor: Colors.white,
+                                          /// Optional, The stroke of the line, only applicable to widget which contains line
+                                          backgroundColor: Colors.white,
 
-                                        /// Optional, Background of the widget
-                                        pathBackgroundColor: Colors.white
+                                          /// Optional, Background of the widget
+                                          pathBackgroundColor: Colors.white
 
-                                        /// Optional, the stroke backgroundColor
+                                          /// Optional, the stroke backgroundColor
 
-                                        ),
+                                          ),
+                                    ),
                                   ),
                                 ),
-                              ),
-                      ],
+                        ],
+                      ),
                     )
                   : ((userProvider.loadingStatus == LoadingStatus.LOADING)
                       ? Center(

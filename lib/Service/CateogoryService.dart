@@ -1,15 +1,22 @@
 import 'dart:developer';
 
+import 'package:assessmentportal/AppConstants/constants.dart';
 import 'package:assessmentportal/DataModel/CategoryModel.dart';
 import 'package:assessmentportal/DataModel/QuizModel.dart';
 import 'package:assessmentportal/NewtworkUtil/API.dart';
 
 class CategoryService {
   API _api = API();
-  Future<List<CategoryModel>> getAllCategories(String token, int userid) async {
+  Future<List<CategoryModel>> getAllCategories(
+      String token, int userid, String role) async {
     List<CategoryModel> categories = [];
-    Map<String, dynamic> result =
-        await _api.getAllCategories(token: token, userid: userid);
+    Map<String, dynamic> result;
+    if (role == ROLE_NORMAL) {
+      result =
+          await _api.getAllEnrolledCategories(token: token, userid: userid);
+    } else {
+      result = await _api.getAllCategories(token: token, userid: userid);
+    }
     log('CategoryService: getAllCategories result: $result');
     String code = result['code'];
     if (code == '2000') {
