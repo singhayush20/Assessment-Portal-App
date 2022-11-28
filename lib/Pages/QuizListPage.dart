@@ -4,6 +4,7 @@ import 'package:assessmentportal/AppConstants/constants.dart';
 import 'package:assessmentportal/DataModel/CategoryModel.dart';
 import 'package:assessmentportal/DataModel/QuizModel.dart';
 import 'package:assessmentportal/Pages/AddQuizPage.dart';
+import 'package:assessmentportal/Pages/QuizQuestionsPage.dart';
 import 'package:assessmentportal/Pages/UpdateQuiz.dart';
 import 'package:assessmentportal/Service/CateogoryService.dart';
 import 'package:assessmentportal/Service/QuizService.dart';
@@ -106,7 +107,7 @@ class _QuizListPageState extends State<QuizListPage> {
       body: RefreshIndicator(
         onRefresh: _loadCategories,
         child: SingleChildScrollView(
-          physics: BouncingScrollPhysics(),
+          physics: const BouncingScrollPhysics(),
           child: Container(
             padding: EdgeInsets.symmetric(
               horizontal: width * 0.05,
@@ -157,6 +158,23 @@ class _QuizListPageState extends State<QuizListPage> {
                                     color: Color(0xFFBDDBF2),
                                   ),
                                   child: ListTile(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              QuizQuestionsPage(
+                                                  token: _sharedPreferences!
+                                                          .getString(
+                                                              BEARER_TOKEN) ??
+                                                      'null',
+                                                  role: _sharedPreferences!
+                                                          .getString(ROLE) ??
+                                                      'null',
+                                                  quiz: quizzes[index]),
+                                        ),
+                                      );
+                                    },
                                     leading: Container(
                                       height: double.infinity,
                                       child: const Icon(
@@ -178,27 +196,11 @@ class _QuizListPageState extends State<QuizListPage> {
                                             // icon: Icon(Icons.book)
                                             itemBuilder: (context) {
                                               return [
-                                                PopupMenuItem<int>(
+                                                const PopupMenuItem<int>(
                                                   value: 0,
                                                   child: Text("Delete"),
                                                 ),
-                                                // PopupMenuItem<int>(
-                                                //   value: 1,
-                                                //   child: Switch.adaptive(
-                                                //       activeColor: Colors.blueGrey.shade600,
-                                                //       activeTrackColor: Colors.grey.shade400,
-                                                //       inactiveThumbColor:
-                                                //       Colors.blueGrey.shade600,
-                                                //       inactiveTrackColor: Colors.grey.shade400,
-                                                //       splashRadius: 50.0,
-                                                //       value: _isQuizActive,
-                                                //       onChanged: (value) {
-                                                //         setState(() {
-                                                //           _isQuizActive = value;
-                                                //         });
-                                                //       }),
-                                                // ),
-                                                PopupMenuItem<int>(
+                                                const PopupMenuItem<int>(
                                                   value: 1,
                                                   child: Text("Update"),
                                                 ),
@@ -258,8 +260,6 @@ class _QuizListPageState extends State<QuizListPage> {
                                                         quiz: quizzes[index]),
                                                   ),
                                                 );
-                                                // } else if (value == 2) {
-                                                //   print("Logout menu is selected.");
                                               }
                                             },
                                           ),
@@ -376,105 +376,3 @@ class _QuizListPageState extends State<QuizListPage> {
     );
   }
 }
-
-// class ListItem extends StatelessWidget {
-//   QuizModel quiz;
-//   String accountType;
-//   final String token;
-//   ListItem(
-//       {required this.quiz, required this.accountType, required this.token});
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container(
-//       margin: EdgeInsets.only(
-//         bottom: 10,
-//       ),
-//       decoration: BoxDecoration(
-//         border: Border.all(
-//             color: Colors.black, width: 0.5, style: BorderStyle.solid),
-//         borderRadius: BorderRadius.all(
-//           Radius.circular(20),
-//         ),
-//         color: Color(0xFFBDDBF2),
-//       ),
-//       child: ListTile(
-//         leading: Container(
-//           height: double.infinity,
-//           child: const Icon(
-//             FontAwesomeIcons.paperclip,
-//           ),
-//         ),
-//         trailing: (accountType == ROLE_NORMAL)
-//             ? Container(
-//                 height: double.infinity,
-//                 child: TextButton(
-//                   onPressed: () {},
-//                   child: Text('Attempt'),
-//                 ),
-//               )
-//             : PopupMenuButton(
-//                 // add icon, by default "3 dot" icon
-//                 // icon: Icon(Icons.book)
-//                 itemBuilder: (context) {
-//                 return [
-//                   PopupMenuItem<int>(
-//                     value: 0,
-//                     child: Text("Delete"),
-//                   ),
-//                   // PopupMenuItem<int>(
-//                   //   value: 1,
-//                   //   child: Switch.adaptive(
-//                   //       activeColor: Colors.blueGrey.shade600,
-//                   //       activeTrackColor: Colors.grey.shade400,
-//                   //       inactiveThumbColor:
-//                   //       Colors.blueGrey.shade600,
-//                   //       inactiveTrackColor: Colors.grey.shade400,
-//                   //       splashRadius: 50.0,
-//                   //       value: _isQuizActive,
-//                   //       onChanged: (value) {
-//                   //         setState(() {
-//                   //           _isQuizActive = value;
-//                   //         });
-//                   //       }),
-//                   // ),
-//                   PopupMenuItem<int>(
-//                     value: 1,
-//                     child: Text("Update"),
-//                   ),
-//                 ];
-//               }, onSelected: (value) async {
-//                 QuizService quizService = QuizService();
-//                 if (value == 0) {
-//                   log('Delete option chosen on quiz: ${quiz.quizId}');
-//                   String code = await quizService.deleteQuiz(
-//                       quizid: quiz.quizId, token: token);
-//                   if (code == '2000') {
-//                     log('Quiz is deleted');
-//                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-//                       content: Text('Quiz deleted Successfully!'),
-//                     ));
-//                   } else {
-//                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-//                       content: Text('Quiz not deleted!'),
-//                     ));
-//                   }
-//                 } else if (value == 1) {
-//                   print("Settings menu is selected.");
-//                   // } else if (value == 2) {
-//                   //   print("Logout menu is selected.");
-//                 }
-//               }),
-//         title: Text("Title: ${quiz.title}"),
-//         subtitle: Column(
-//           mainAxisAlignment: MainAxisAlignment.spaceAround,
-//           crossAxisAlignment: CrossAxisAlignment.start,
-//           children: [
-//             Text("Questions: ${quiz.numberOfQuestions}"),
-//             Text("About: ${quiz.description}"),
-//             Text("Marks: ${quiz.numberOfQuestions}"),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }

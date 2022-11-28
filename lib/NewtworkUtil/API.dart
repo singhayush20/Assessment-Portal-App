@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:assessmentportal/AppConstants/constants.dart';
 import 'package:assessmentportal/DataModel/CategoryModel.dart';
+import 'package:assessmentportal/DataModel/QuestionModel.dart';
 import 'package:assessmentportal/DataModel/QuizModel.dart';
 import 'package:assessmentportal/DataModel/UserModel.dart';
 import 'package:dio/dio.dart';
@@ -37,6 +38,8 @@ class API {
       "$domain/assessmentportal/users/enrolledcategories/all/add";
   final getAllEnrolledCategoriesUrl =
       '$domain/assessmentportal/users/enrolledcategories/all';
+  final loadQuestionsUrl = '$domain/assessmentportal/question/quiz';
+  final addQuestionUrl = '$domain/assessmentportal/question/create';
   final Dio _dio = Dio();
 
   Future<Map<String, dynamic>> loginUser(
@@ -374,6 +377,48 @@ class API {
     Response response = await _dio.put(enrollInCateogryUrl,
         queryParameters: data, options: options);
     log('enroll user response: $response');
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> loadQuestions(
+      {required int quizId, required String token}) async {
+    Options options = Options(
+        validateStatus: (_) => true,
+        contentType: Headers.jsonContentType,
+        responseType: ResponseType.json,
+        headers: {HttpHeaders.authorizationHeader: token});
+
+    log('fetching questions for quiz: $quizId');
+    Response response =
+        await _dio.get(loadQuestionsUrl + "/$quizId", options: options);
+    log('question fetch response $response');
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> addQuestionToQuiz(
+      {required QuestionModel questionModel, required String token}) async {
+    Options options = Options(
+        validateStatus: (_) => true,
+        contentType: Headers.jsonContentType,
+        responseType: ResponseType.json,
+        headers: {HttpHeaders.authorizationHeader: token});
+    Map<String, dynamic> data = {
+      "content": questionModel.content,
+      "image": questionModel.image ?? 'example.jpeg',
+      "option1": questionModel.option1,
+      "option2": questionModel.option2,
+      "option3": questionModel.option3,
+      "option4": questionModel.option4,
+      "answer": questionModel.correctAnswer,
+      "quiz": questionModel.quiz,
+    };
+    log('Adding question: $data');
+    Response response = await _dio.post(
+      addQuestionUrl,
+      data: data,
+      options: options,
+    );
+    log('question fetch response $response');
     return response.data;
   }
 }
