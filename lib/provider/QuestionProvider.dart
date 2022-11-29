@@ -15,7 +15,7 @@ class QuestionProvider with ChangeNotifier {
   }
 
   Future<List<QuestionModel>> loadQuestions(
-      {required int quizId, required String token}) async {
+      {required String quizId, required String token}) async {
     log('QuestionProvider: loading questions for quizId: $quizId');
     // areQuestionsLoaded = QuestionLoadingStatus.LOADING;
     _questions = [];

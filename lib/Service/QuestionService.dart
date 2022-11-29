@@ -6,7 +6,7 @@ import 'package:assessmentportal/NewtworkUtil/API.dart';
 class QuestionService {
   final API _api = API();
   Future<List<QuestionModel>> loadQuestions(
-      {required int quizId, required String token}) async {
+      {required String quizId, required String token}) async {
     List<QuestionModel> questions = [];
     log('loading questions\n\n');
     Map<String, dynamic> result =
@@ -58,6 +58,55 @@ class QuestionService {
 
     Map<String, dynamic> result = await _api.addQuestionToQuiz(
         questionModel: questionModel, token: token);
+    return result['code'];
+  }
+
+//    {
+//             "questionId": 141,
+//             "content": "What is Swing",
+//             "image": "Image2.jpg",
+//             "option1": "ans 1",
+//             "option2": "abc",
+//             "option3": "Wjwdp",
+//             "option4": "dwa",
+//             "answer": "abc",
+//             "quiz": {
+//                 "quizId": "87"
+//             }
+//  }
+  Future<String> updateQuestion(
+      {required int questionId,
+      required String content,
+      String? image,
+      required String option1,
+      required String option2,
+      String? option3,
+      String? option4,
+      required String answer,
+      required String token,
+      required int quizId}) async {
+    QuestionModel questionModel = QuestionModel(
+      content: content,
+      option1: option1,
+      option2: option2,
+      correctAnswer: answer,
+      option3: option3,
+      option4: option4,
+      image: image,
+      questionId: questionId,
+      quiz: {
+        "quiz": {"quizId": quizId}
+      },
+    );
+    Map<String, dynamic> result =
+        await _api.updateQuestion(question: questionModel, token: token);
+    return result['code'];
+  }
+
+  Future<String> deleteQuestion(
+      {required String token, required int questionId}) async {
+    Map<String, dynamic> result =
+        await _api.deleteQuestion(questionId: questionId, token: token);
     return result['code'];
   }
 }
