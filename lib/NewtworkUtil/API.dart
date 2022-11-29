@@ -40,6 +40,8 @@ class API {
       '$domain/assessmentportal/users/enrolledcategories/all';
   final loadQuestionsUrl = '$domain/assessmentportal/question/quiz';
   final addQuestionUrl = '$domain/assessmentportal/question/create';
+  final updateQuestionUrl = '$domain/assessmentportal/question/update';
+  final deleteQuestionUrl = '$domain/assessmentportal/question/delete';
   final Dio _dio = Dio();
 
   Future<Map<String, dynamic>> loginUser(
@@ -381,7 +383,7 @@ class API {
   }
 
   Future<Map<String, dynamic>> loadQuestions(
-      {required int quizId, required String token}) async {
+      {required String quizId, required String token}) async {
     Options options = Options(
         validateStatus: (_) => true,
         contentType: Headers.jsonContentType,
@@ -419,6 +421,46 @@ class API {
       options: options,
     );
     log('question fetch response $response');
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> updateQuestion(
+      {required String token, required QuestionModel question}) async {
+    Map<String, dynamic> data = {
+      "questionId": question.questionId,
+      "content": question.content,
+      "image": question.image,
+      "option1": question.option1,
+      "option2": question.option2,
+      "option3": question.option3,
+      "option4": question.option4,
+      "answer": "abc",
+      "quiz": {"quizId": "87"}
+    };
+    Options options = Options(
+        validateStatus: (_) => true,
+        contentType: Headers.jsonContentType,
+        responseType: ResponseType.json,
+        headers: {HttpHeaders.authorizationHeader: token});
+    log('updating question: $data');
+    Response response =
+        await _dio.put(updateQuestionUrl, options: options, data: data);
+    log('update question response: $response');
+
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> deleteQuestion(
+      {required int questionId, required String token}) async {
+    Options options = Options(
+        validateStatus: (_) => true,
+        contentType: Headers.jsonContentType,
+        responseType: ResponseType.json,
+        headers: {HttpHeaders.authorizationHeader: token});
+    log('Deleting question with id: $questionId');
+    Response response =
+        await _dio.delete(deleteQuestionUrl + "/$questionId", options: options);
+    log('Delete question response $response');
     return response.data;
   }
 }

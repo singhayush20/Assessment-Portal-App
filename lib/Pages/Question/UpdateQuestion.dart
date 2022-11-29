@@ -1,19 +1,20 @@
-import 'package:assessmentportal/DataModel/QuizModel.dart';
+import 'package:assessmentportal/DataModel/QuestionModel.dart';
 import 'package:assessmentportal/Service/QuestionService.dart';
 import 'package:assessmentportal/provider/QuestionProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
-class AddQuestionPage extends StatefulWidget {
-  QuizModel quiz;
+class UpdateQuestionPage extends StatefulWidget {
   String token;
-  AddQuestionPage({required this.quiz, required this.token});
+  QuestionModel question;
+  UpdateQuestionPage({required this.token, required this.question});
+
   @override
-  State<AddQuestionPage> createState() => _AddQuestionPageState();
+  State<UpdateQuestionPage> createState() => _UpdateQuestionPageState();
 }
 
-class _AddQuestionPageState extends State<AddQuestionPage> {
+class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
   final QuestionService questionService = QuestionService();
 
   final _formKey = GlobalKey<FormState>();
@@ -24,6 +25,18 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
   TextEditingController _option3Controller = TextEditingController();
   TextEditingController _option4Controller = TextEditingController();
   TextEditingController _answerController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    _contentController.text = widget.question.content;
+    _option1Controller.text = widget.question.option1;
+    _option2Controller.text = widget.question.option2;
+    _option3Controller.text = widget.question.option3 ?? '';
+    _option4Controller.text = widget.question.option4 ?? '';
+    _answerController.text = widget.question.correctAnswer;
+  }
+
   @override
   Widget build(BuildContext context) {
     final QuestionProvider _questionProvider =
@@ -37,7 +50,7 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: const Text(
-          'Add a new Question',
+          'Update Question',
         ),
       ),
       body: Container(
@@ -50,7 +63,7 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
               height: height * 0.1,
               alignment: Alignment.centerLeft,
               child: const Text(
-                'Fill the details and click add,\n* marked fields are compulsory',
+                'Edit the details and click update,\n* marked fields are compulsory',
                 style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.w600,
@@ -244,32 +257,45 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
               child: ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
-                    final QuestionService questionService = QuestionService();
-                    String code = await questionService.addQuestion(
+                    String code = await questionService.updateQuestion(
+                        questionId: widget.question.questionId ?? 0,
                         content: _contentController.text,
                         option1: _option1Controller.text,
                         option2: _option2Controller.text,
-                        option3: _option3Controller.text,
-                        option4: _option4Controller.text,
                         answer: _answerController.text,
-                        quizId: widget.quiz.quizId,
-                        token: widget.token);
+                        token: widget.token,
+                        quizId: widget.question.quiz!['quiz']['quizId'],
+                        option3: _option3Controller.text,
+                        option4: _option4Controller.text);
                     if (code == '2000') {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Question added successfully'),
+                          content: Text('Question updated successfully'),
                         ),
                       );
                       //re-load the questions
                       _questionProvider.loadQuestions(
-                          quizId: widget.quiz.quizId, token: widget.token);
+                          quizId:
+                              widget.question.quiz!['quiz']['quizId'].quizId,
+                          token: widget.token);
+                      _questionProvider.loadQuestions(
+                          quizId: widget.question.quiz!['quiz']['quizId'],
+                          token: widget.token);
                       Navigator.pop(context);
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Category not updated'),
-                        ),
-                      );
+                      String code = await questionService.deleteQuestion(
+                          questionId: widget.question.questionId ?? 0,
+                          token: widget.token);
+                      if (code == '2000') {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Question not updated'),
+                          ),
+                        );
+                        _questionProvider.loadQuestions(
+                            quizId: widget.question.quiz!['quiz']['quizId'],
+                            token: widget.token);
+                      }
                     }
                   }
                 },

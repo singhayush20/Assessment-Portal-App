@@ -1,5 +1,5 @@
 import 'package:assessmentportal/AppConstants/constants.dart';
-import 'package:assessmentportal/Pages/EditUserDetails.dart';
+import 'package:assessmentportal/Pages/Profile/EditUserDetails.dart';
 import 'package:assessmentportal/provider/UserProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';

@@ -2,9 +2,9 @@ import 'dart:developer';
 
 import 'package:assessmentportal/AppConstants/constants.dart';
 import 'package:assessmentportal/DataModel/CategoryModel.dart';
-import 'package:assessmentportal/Pages/AddCategory.dart';
-import 'package:assessmentportal/Pages/CategoryTile.dart';
-import 'package:assessmentportal/Pages/EnrollCategorypage.dart';
+import 'package:assessmentportal/Pages/Category/AddCategory.dart';
+import 'package:assessmentportal/Pages/Category/CategoryTile.dart';
+import 'package:assessmentportal/Pages/Category/EnrollCategorypage.dart';
 import 'package:assessmentportal/Service/CateogoryService.dart';
 import 'package:assessmentportal/provider/UserProvider.dart';
 import 'package:flutter/material.dart';

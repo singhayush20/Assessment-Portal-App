@@ -65,7 +65,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
           //====APP BAR Theme
-          appBarTheme: AppBarTheme(
+          appBarTheme: const AppBarTheme(
             titleTextStyle: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.w900,
@@ -86,7 +86,7 @@ class MyApp extends StatelessWidget {
           //==Scaffold==
           scaffoldBackgroundColor: Colors.white,
           //====BOTTOM NAVIGATION Theme
-          bottomNavigationBarTheme: BottomNavigationBarThemeData(
+          bottomNavigationBarTheme: const BottomNavigationBarThemeData(
             backgroundColor: Colors.white,
             selectedItemColor: Colors.red,
             unselectedItemColor: Colors.black,

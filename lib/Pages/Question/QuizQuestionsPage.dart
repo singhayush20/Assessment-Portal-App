@@ -3,7 +3,8 @@ import 'dart:developer';
 import 'package:assessmentportal/AppConstants/constants.dart';
 import 'package:assessmentportal/DataModel/QuestionModel.dart';
 import 'package:assessmentportal/DataModel/QuizModel.dart';
-import 'package:assessmentportal/Pages/AddQuestionPage.dart';
+import 'package:assessmentportal/Pages/Question/AddQuestionPage.dart';
+import 'package:assessmentportal/Pages/Question/UpdateQuestion.dart';
 import 'package:assessmentportal/Service/QuestionService.dart';
 import 'package:assessmentportal/provider/QuestionProvider.dart';
 import 'package:flutter/material.dart';
@@ -30,7 +31,7 @@ class _QuizQuestionsPageState extends State<QuizQuestionsPage> {
   final QuestionService _questionService = QuestionService();
   Future<List<QuestionModel>> _loadQuestions() async {
     return await _questionService.loadQuestions(
-        quizId: widget.quiz.quizId, token: widget.token);
+        quizId: widget.quiz.quizId.toString(), token: widget.token);
   }
 
   @override
@@ -66,7 +67,7 @@ class _QuizQuestionsPageState extends State<QuizQuestionsPage> {
       body: FutureBuilder<List<QuestionModel>>(
         // future: _loadQuestions(),
         future: _questionProvider.loadQuestions(
-            quizId: widget.quiz.quizId, token: widget.token),
+            quizId: widget.quiz.quizId.toString(), token: widget.token),
         builder: (context, snapshot) {
           log('data in snapshot: ${snapshot.data}');
           if (!snapshot.hasData) {
@@ -123,7 +124,9 @@ class _QuizQuestionsPageState extends State<QuizQuestionsPage> {
                           margin: EdgeInsets.only(left: 5, right: 5, top: 5),
                           height: height * 0.2,
                           child: CustomListTile(
-                              question: questions[index], index: index));
+                              question: questions[index],
+                              index: index,
+                              token: widget.token));
                     })
                 : Center(
                     child: Container(
@@ -147,7 +150,9 @@ class _QuizQuestionsPageState extends State<QuizQuestionsPage> {
 class CustomListTile extends StatelessWidget {
   QuestionModel question;
   int index;
-  CustomListTile({required this.question, required this.index});
+  String token;
+  CustomListTile(
+      {required this.question, required this.index, required this.token});
 
   @override
   Widget build(BuildContext context) {
@@ -181,10 +186,25 @@ class CustomListTile extends StatelessWidget {
                       constraints.maxWidth / constraints.maxHeight * 1.5,
                   crossAxisCount: 2,
                   children: [
-                    QuestionChoice(choice: '1. ${question.option1}'),
-                    QuestionChoice(choice: '2. ${question.option2}'),
-                    QuestionChoice(choice: '3. ${question.option3}'),
-                    QuestionChoice(choice: '4. ${question.option4}'),
+                    QuestionChoice(
+                        question: question,
+                        choice: '1. ${question.option1}',
+                        token: token),
+                    QuestionChoice(
+                      question: question,
+                      choice: '2. ${question.option2}',
+                      token: token,
+                    ),
+                    QuestionChoice(
+                      question: question,
+                      choice: '3. ${question.option3}',
+                      token: token,
+                    ),
+                    QuestionChoice(
+                      question: question,
+                      choice: '4. ${question.option4}',
+                      token: token,
+                    ),
                   ],
                 ),
               ),
@@ -207,7 +227,19 @@ class CustomListTile extends StatelessWidget {
                       ),
                     ];
                   },
-                  onSelected: (value) async {},
+                  onSelected: (value) async {
+                    if (value == 0) {
+                      //delete
+                      final QuestionService questionService = QuestionService();
+                    } else if (value == 1) {
+                      //update
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => UpdateQuestionPage(
+                                  question: question, token: token)));
+                    }
+                  },
                 ),
               ),
             )
@@ -222,9 +254,13 @@ class QuestionChoice extends StatelessWidget {
   const QuestionChoice({
     Key? key,
     required this.choice,
+    required this.token,
+    required this.question,
   }) : super(key: key);
 
   final String choice;
+  final QuestionModel question;
+  final String token;
 
   @override
   Widget build(BuildContext context) {
@@ -232,10 +268,6 @@ class QuestionChoice extends StatelessWidget {
       builder: (context, constraints) {
         return Container(
           alignment: Alignment.center,
-          // padding: EdgeInsets.symmetric(
-          //   horizontal: constraints.maxWidth * 0.05,
-          //   vertical: constraints.maxHeight * 0.05,
-          // ),
           decoration: BoxDecoration(
             border: Border.all(
                 color: Colors.black, width: 0.5, style: BorderStyle.solid),

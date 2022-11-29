@@ -1,8 +1,8 @@
 import 'dart:developer';
 
 import 'package:assessmentportal/DataModel/CategoryModel.dart';
-import 'package:assessmentportal/Pages/QuizListPage.dart';
-import 'package:assessmentportal/Pages/UpdateCategory.dart';
+import 'package:assessmentportal/Pages/Quiz/QuizListPage.dart';
+import 'package:assessmentportal/Pages/Category/UpdateCategory.dart';
 import 'package:assessmentportal/Service/CateogoryService.dart';
 import 'package:flutter/material.dart';
 

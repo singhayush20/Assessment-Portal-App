@@ -2,7 +2,7 @@ import 'dart:developer';
 
 import 'package:assessmentportal/AppConstants/constants.dart';
 import 'package:assessmentportal/Navigation/BottomNavigationProvider.dart';
-import 'package:assessmentportal/Pages/ProfilePage.dart';
+import 'package:assessmentportal/Pages/Profile/ProfilePage.dart';
 import 'package:assessmentportal/Register%20and%20Login/LoginPage.dart';
 import 'package:assessmentportal/provider/UserProvider.dart';
 import 'package:flutter/material.dart';
@@ -11,7 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-import '../Pages/HomeScreen.dart';
+import '../Pages/Category/HomeScreen.dart';
 
 class BottomNavigation extends StatefulWidget {
   const BottomNavigation({Key? key}) : super(key: key);

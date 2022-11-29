@@ -18,12 +18,13 @@ class QuestionModel {
   String? image;
 
   QuestionModel(
-      {required this.content,
+      {this.questionId,
+      required this.content,
       required this.option1,
       required this.option2,
       this.option3,
       this.option4,
       required this.correctAnswer,
       this.image,
-      this.quiz});
+      required this.quiz});
 }
