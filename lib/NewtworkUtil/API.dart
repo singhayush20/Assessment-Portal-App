@@ -434,8 +434,8 @@ class API {
       "option2": question.option2,
       "option3": question.option3,
       "option4": question.option4,
-      "answer": "abc",
-      "quiz": {"quizId": "87"}
+      "answer": question.correctAnswer,
+      "quiz": {"quizId": question.quiz!['quiz']['quizId']}
     };
     Options options = Options(
         validateStatus: (_) => true,

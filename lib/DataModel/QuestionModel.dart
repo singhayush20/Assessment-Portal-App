@@ -1,12 +1,4 @@
 class QuestionModel {
-  //  "questionId": 142,
-  //           "content": "What is OOPS",
-  //           "image": "example2.jpeg",
-  //           "option1": "choice1",
-  //           "option2": "choice2",
-  //           "option3": "choice3",
-  //           "option4": "choice4",
-  //           "answer": "choice1",
   int? questionId;
   Map<String, dynamic>? quiz;
   String content;

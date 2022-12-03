@@ -28,11 +28,11 @@ class _QuizQuestionsPageState extends State<QuizQuestionsPage> {
     // _loadQuestions();
   }
 
-  final QuestionService _questionService = QuestionService();
-  Future<List<QuestionModel>> _loadQuestions() async {
-    return await _questionService.loadQuestions(
-        quizId: widget.quiz.quizId.toString(), token: widget.token);
-  }
+  // final QuestionService _questionService = QuestionService();
+  // Future<List<QuestionModel>> _loadQuestions() async {
+  //   return await _questionService.loadQuestions(
+  //       quizId: widget.quiz.quizId.toString(), token: widget.token);
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -42,73 +42,39 @@ class _QuizQuestionsPageState extends State<QuizQuestionsPage> {
         MediaQuery.of(context).padding.bottom;
     final QuestionProvider _questionProvider =
         Provider.of<QuestionProvider>(context);
+    if (_questionProvider.areQuestionsLoaded ==
+        QuestionLoadingStatus.NOT_STARTED) {
+      _questionProvider.loadQuestions(
+          quizId: widget.quiz.quizId.toString(), token: widget.token);
+    }
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Questions'),
-        actions: (widget.role != ROLE_NORMAL)
-            ? [
-                IconButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AddQuestionPage(
-                            quiz: widget.quiz, token: widget.token),
-                      ),
-                    );
-                  },
-                  icon: const Icon(
-                    FontAwesomeIcons.plus,
+        appBar: AppBar(
+          title: Text('Questions'),
+          actions: (widget.role != ROLE_NORMAL)
+              ? [
+                  IconButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AddQuestionPage(
+                              quiz: widget.quiz, token: widget.token),
+                        ),
+                      );
+                    },
+                    icon: const Icon(
+                      FontAwesomeIcons.plus,
+                    ),
                   ),
-                ),
-              ]
-            : null,
-      ),
-      body: FutureBuilder<List<QuestionModel>>(
-        // future: _loadQuestions(),
-        future: _questionProvider.loadQuestions(
-            quizId: widget.quiz.quizId.toString(), token: widget.token),
-        builder: (context, snapshot) {
-          log('data in snapshot: ${snapshot.data}');
-          if (!snapshot.hasData) {
-            return Center(
-              child: Container(
-                color: Colors.white,
-                height: height * 0.8,
-                alignment: Alignment.center,
-                child: Container(
-                  height: 80,
-                  width: 80,
-                  child: const LoadingIndicator(
-                      indicatorType: Indicator.lineScale,
-                      colors: [
-                        Colors.purple,
-                        Colors.indigo,
-                        Colors.blue,
-                        Colors.green,
-                        Colors.red,
-                      ],
-
-                      /// Optional, The color collections
-                      strokeWidth: 1,
-
-                      /// Optional, The stroke of the line, only applicable to widget which contains line
-                      backgroundColor: Colors.white,
-
-                      /// Optional, Background of the widget
-                      pathBackgroundColor: Colors.white
-
-                      /// Optional, the stroke backgroundColor
-
-                      ),
-                ),
-              ),
-            );
-          } else {
-            List<QuestionModel> questions = snapshot.data ?? [];
-            return (questions.length > 0)
+                ]
+              : null,
+        ),
+        body: (_questionProvider.areQuestionsLoaded ==
+                QuestionLoadingStatus.COMPLETED)
+            ? (_questionProvider.questions.isNotEmpty)
                 ? ListView.builder(
-                    itemCount: questions.length,
+                    physics: NeverScrollableScrollPhysics(),
+                    itemCount: _questionProvider.questions.length,
                     itemBuilder: (context, index) {
                       return Container(
                           decoration: BoxDecoration(
@@ -124,9 +90,11 @@ class _QuizQuestionsPageState extends State<QuizQuestionsPage> {
                           margin: EdgeInsets.only(left: 5, right: 5, top: 5),
                           height: height * 0.2,
                           child: CustomListTile(
-                              question: questions[index],
-                              index: index,
-                              token: widget.token));
+                            question: _questionProvider.questions[index],
+                            index: index,
+                            token: widget.token,
+                            questionProvider: _questionProvider,
+                          ));
                     })
                 : Center(
                     child: Container(
@@ -139,21 +107,142 @@ class _QuizQuestionsPageState extends State<QuizQuestionsPage> {
                         ),
                       ),
                     ),
-                  );
-          }
-        },
-      ),
-    );
+                  )
+            : Center(
+                child: Container(
+                  color: Colors.white,
+                  height: height * 0.8,
+                  alignment: Alignment.center,
+                  child: Container(
+                    height: 80,
+                    width: 80,
+                    child: const LoadingIndicator(
+                        indicatorType: Indicator.lineScale,
+                        colors: [
+                          Colors.purple,
+                          Colors.indigo,
+                          Colors.blue,
+                          Colors.green,
+                          Colors.red,
+                        ],
+
+                        /// Optional, The color collections
+                        strokeWidth: 1,
+
+                        /// Optional, The stroke of the line, only applicable to widget which contains line
+                        backgroundColor: Colors.white,
+
+                        /// Optional, Background of the widget
+                        pathBackgroundColor: Colors.white
+
+                        /// Optional, the stroke backgroundColor
+
+                        ),
+                  ),
+                ),
+              )
+        // body: FutureBuilder<List<QuestionModel>>(
+        // future: _loadQuestions(),
+        // future: _questionProvider.loadQuestions(
+        // quizId: widget.quiz.quizId.toString(), token: widget.token),
+        // builder: (context, snapshot) {
+        //   log('data in snapshot: ${snapshot.data}');
+        //   if (!snapshot.hasData) {
+        //     return Center(
+        //       child: Container(
+        //         color: Colors.white,
+        //         height: height * 0.8,
+        //         alignment: Alignment.center,
+        //         child: Container(
+        //           height: 80,
+        //           width: 80,
+        //           child: const LoadingIndicator(
+        //               indicatorType: Indicator.lineScale,
+        //               colors: [
+        //                 Colors.purple,
+        //                 Colors.indigo,
+        //                 Colors.blue,
+        //                 Colors.green,
+        //                 Colors.red,
+        //               ],
+
+        //               /// Optional, The color collections
+        //               strokeWidth: 1,
+
+        //               /// Optional, The stroke of the line, only applicable to widget which contains line
+        //               backgroundColor: Colors.white,
+
+        //               /// Optional, Background of the widget
+        //               pathBackgroundColor: Colors.white
+
+        //               /// Optional, the stroke backgroundColor
+
+        //               ),
+        //         ),
+        //       ),
+        //     );
+        //   } else {
+        //     List<QuestionModel> questions = snapshot.data ?? [];
+        //     return (questions.length > 0)
+        //         ? ListView.builder(
+        //             physics: NeverScrollableScrollPhysics(),
+        //             itemCount: questions.length,
+        //             itemBuilder: (context, index) {
+        //               return Container(
+        //                   decoration: BoxDecoration(
+        //                     border: Border.all(
+        //                         color: Colors.black,
+        //                         width: 0.5,
+        //                         style: BorderStyle.solid),
+        //                     borderRadius: const BorderRadius.all(
+        //                       Radius.circular(20),
+        //                     ),
+        //                     color: Color.fromARGB(255, 244, 223, 223),
+        //                   ),
+        //                   margin: EdgeInsets.only(left: 5, right: 5, top: 5),
+        //                   height: height * 0.2,
+        //                   child: CustomListTile(
+        //                     question: questions[index],
+        //                     index: index,
+        //                     token: widget.token,
+        //                     questionProvider: _questionProvider,
+        //                   ));
+        //             })
+        //         : Center(
+        //             child: Container(
+        //               alignment: Alignment.center,
+        //               child: const Text(
+        //                 'No Questions in this Quiz',
+        //                 style: TextStyle(
+        //                   fontSize: 20,
+        //                   fontWeight: FontWeight.w600,
+        //                 ),
+        //               ),
+        //             ),
+        //           );
+        //   }
+        // },
+        //   ),
+        );
   }
 }
 
-class CustomListTile extends StatelessWidget {
+class CustomListTile extends StatefulWidget {
   QuestionModel question;
+  QuestionProvider questionProvider;
   int index;
   String token;
   CustomListTile(
-      {required this.question, required this.index, required this.token});
+      {required this.question,
+      required this.index,
+      required this.token,
+      required this.questionProvider});
 
+  @override
+  State<CustomListTile> createState() => _CustomListTileState();
+}
+
+class _CustomListTileState extends State<CustomListTile> {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
@@ -170,7 +259,7 @@ class CustomListTile extends StatelessWidget {
                 child: Container(
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    '${index + 1}. ${question.content}',
+                    '${widget.index + 1}. ${widget.question.content}',
                     style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
                   ),
                 ),
@@ -187,23 +276,23 @@ class CustomListTile extends StatelessWidget {
                   crossAxisCount: 2,
                   children: [
                     QuestionChoice(
-                        question: question,
-                        choice: '1. ${question.option1}',
-                        token: token),
+                        question: widget.question,
+                        choice: '1. ${widget.question.option1}',
+                        token: widget.token),
                     QuestionChoice(
-                      question: question,
-                      choice: '2. ${question.option2}',
-                      token: token,
+                      question: widget.question,
+                      choice: '2. ${widget.question.option2}',
+                      token: widget.token,
                     ),
                     QuestionChoice(
-                      question: question,
-                      choice: '3. ${question.option3}',
-                      token: token,
+                      question: widget.question,
+                      choice: '3. ${widget.question.option3}',
+                      token: widget.token,
                     ),
                     QuestionChoice(
-                      question: question,
-                      choice: '4. ${question.option4}',
-                      token: token,
+                      question: widget.question,
+                      choice: '4. ${widget.question.option4}',
+                      token: widget.token,
                     ),
                   ],
                 ),
@@ -231,13 +320,30 @@ class CustomListTile extends StatelessWidget {
                     if (value == 0) {
                       //delete
                       final QuestionService questionService = QuestionService();
+                      String code = await questionService.deleteQuestion(
+                          token: widget.token,
+                          questionId: widget.question.questionId ?? 0);
+                      if (code == '2000') {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content:
+                                    Text('Question deleted successfully')));
+                        widget.questionProvider.loadQuestions(
+                            quizId: widget.question.quiz!['quizId'].toString(),
+                            token: widget.token);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text('Question not deleted')));
+                      }
                     } else if (value == 1) {
                       //update
                       Navigator.push(
                           context,
                           MaterialPageRoute(
                               builder: (context) => UpdateQuestionPage(
-                                  question: question, token: token)));
+                                  question: widget.question,
+                                  token: widget.token)));
                     }
                   },
                 ),

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:assessmentportal/DataModel/QuestionModel.dart';
 import 'package:assessmentportal/Service/QuestionService.dart';
 import 'package:assessmentportal/provider/QuestionProvider.dart';
@@ -41,6 +43,8 @@ class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
   Widget build(BuildContext context) {
     final QuestionProvider _questionProvider =
         Provider.of<QuestionProvider>(context, listen: false);
+    log('current question: ${widget.question.quiz}');
+
     final height = MediaQuery.of(context).size.height -
         AppBar().preferredSize.height -
         MediaQuery.of(context).padding.top -
@@ -196,7 +200,7 @@ class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
                         height: constraints.maxHeight * 0.15,
                         child: TextFormField(
                           maxLines: 1,
-                          controller: _contentController,
+                          controller: _option4Controller,
                           obscureText: false,
                           cursorColor: Colors.black,
                           keyboardType: TextInputType.text,
@@ -216,7 +220,7 @@ class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
                         height: constraints.maxHeight * 0.15,
                         child: TextFormField(
                           maxLines: 1,
-                          controller: _contentController,
+                          controller: _answerController,
                           obscureText: false,
                           cursorColor: Colors.black,
                           keyboardType: TextInputType.text,
@@ -264,7 +268,7 @@ class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
                         option2: _option2Controller.text,
                         answer: _answerController.text,
                         token: widget.token,
-                        quizId: widget.question.quiz!['quiz']['quizId'],
+                        quizId: widget.question.quiz!['quizId'].toString(),
                         option3: _option3Controller.text,
                         option4: _option4Controller.text);
                     if (code == '2000') {
@@ -274,12 +278,12 @@ class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
                         ),
                       );
                       //re-load the questions
+                      // _questionProvider.loadQuestions(
+                      //     quizId:
+                      //         widget.question.quiz!['quiz']['quizId'].quizId,
+                      //     token: widget.token);
                       _questionProvider.loadQuestions(
-                          quizId:
-                              widget.question.quiz!['quiz']['quizId'].quizId,
-                          token: widget.token);
-                      _questionProvider.loadQuestions(
-                          quizId: widget.question.quiz!['quiz']['quizId'],
+                          quizId: widget.question.quiz!['quizId'].toString(),
                           token: widget.token);
                       Navigator.pop(context);
                     } else {

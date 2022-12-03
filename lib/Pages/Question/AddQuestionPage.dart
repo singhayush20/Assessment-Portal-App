@@ -183,7 +183,7 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
                         height: constraints.maxHeight * 0.15,
                         child: TextFormField(
                           maxLines: 1,
-                          controller: _contentController,
+                          controller: _option4Controller,
                           obscureText: false,
                           cursorColor: Colors.black,
                           keyboardType: TextInputType.text,
@@ -203,7 +203,7 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
                         height: constraints.maxHeight * 0.15,
                         child: TextFormField(
                           maxLines: 1,
-                          controller: _contentController,
+                          controller: _answerController,
                           obscureText: false,
                           cursorColor: Colors.black,
                           keyboardType: TextInputType.text,

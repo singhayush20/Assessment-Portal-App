@@ -19,6 +19,7 @@ class QuestionService {
       data.forEach((element) {
         log('for element: $element');
         questions.add(QuestionModel(
+            questionId: element['questionId'],
             content: element['content'],
             option1: element['option1'],
             option2: element['option2'],
@@ -51,9 +52,7 @@ class QuestionService {
         option3: option3,
         option4: option4,
         correctAnswer: answer,
-        quiz: {
-          "quiz": {"quizId": quizId}
-        },
+        quiz: {"quizId": "$quizId"},
         image: "example.jpeg");
 
     Map<String, dynamic> result = await _api.addQuestionToQuiz(
@@ -61,19 +60,6 @@ class QuestionService {
     return result['code'];
   }
 
-//    {
-//             "questionId": 141,
-//             "content": "What is Swing",
-//             "image": "Image2.jpg",
-//             "option1": "ans 1",
-//             "option2": "abc",
-//             "option3": "Wjwdp",
-//             "option4": "dwa",
-//             "answer": "abc",
-//             "quiz": {
-//                 "quizId": "87"
-//             }
-//  }
   Future<String> updateQuestion(
       {required int questionId,
       required String content,
@@ -84,7 +70,7 @@ class QuestionService {
       String? option4,
       required String answer,
       required String token,
-      required int quizId}) async {
+      required String quizId}) async {
     QuestionModel questionModel = QuestionModel(
       content: content,
       option1: option1,
