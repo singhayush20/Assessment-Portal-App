@@ -27,6 +27,8 @@ class API {
   final getAllCategoriesUrl = "$domain/assessmentportal/category/all";
   final getQuizzesForCategoryUrl =
       "$domain/assessmentportal/quiz/getByCategory";
+  final getQuizzesForCategoryandActiveUrl =
+      "$domain/assessmentportal/quiz/active";
   final addNewCategoryUrl = "$domain/assessmentportal/category/create";
   final loadQuizzesAdminUrl = "$domain/assessmentportal/quiz/getByAdmin/";
   final addNewQuizUrl = "$domain/assessmentportal/quiz/create";
@@ -202,7 +204,7 @@ class API {
     return response.data;
   }
 
-  //for normal user
+  //for normal user-load all active/inactive quizzes in a category
   Future<Map<String, dynamic>> getAllQuizzesforCategory(
       {required String token, required int categoryId}) async {
     Options options = Options(
@@ -213,6 +215,21 @@ class API {
     log('Fetching all quizzes for categoryId: $categoryId and token $token');
     Response response = await _dio
         .get(getQuizzesForCategoryUrl + "/$categoryId", options: options);
+    log('Fetched quizzes: $response');
+    return response.data;
+  }
+
+  //for normal user- load all active quizzes only
+  Future<Map<String, dynamic>> getAllQuizzesforCategoryandActive(
+      {required String token, required int categoryId}) async {
+    Options options = Options(
+        validateStatus: (_) => true,
+        contentType: Headers.jsonContentType,
+        responseType: ResponseType.json,
+        headers: {HttpHeaders.authorizationHeader: token});
+    log('Fetching all quizzes for categoryId: $categoryId and token $token');
+    Response response = await _dio.get(getQuizzesForCategoryandActiveUrl,
+        options: options, queryParameters: {"categoryId": categoryId});
     log('Fetched quizzes: $response');
     return response.data;
   }

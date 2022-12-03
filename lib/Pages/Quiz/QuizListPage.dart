@@ -38,10 +38,10 @@ class _QuizListPageState extends State<QuizListPage> {
     _sharedPreferences = await SharedPreferences.getInstance();
     _categoryService = CategoryService();
 
-    await _loadCategories();
+    await _loadQuizzes();
   }
 
-  Future<void> _loadCategories() async {
+  Future<void> _loadQuizzes() async {
     setState(() {
       _areQuizzesLoaded = false;
     });
@@ -90,7 +90,7 @@ class _QuizListPageState extends State<QuizListPage> {
                         MaterialPageRoute(
                           builder: (context) => AddQuizPage(
                             userid: _sharedPreferences!.getInt(USER_ID) ?? 0,
-                            categoryid: widget.category.categoryId ?? 0,
+                            categoryid: widget.category.categoryId,
                             token:
                                 _sharedPreferences!.getString(BEARER_TOKEN) ??
                                     'null',
@@ -105,7 +105,7 @@ class _QuizListPageState extends State<QuizListPage> {
             : null,
       ),
       body: RefreshIndicator(
-        onRefresh: _loadCategories,
+        onRefresh: _loadQuizzes,
         child: SingleChildScrollView(
           physics: const BouncingScrollPhysics(),
           child: Container(
@@ -250,9 +250,8 @@ class _QuizListPageState extends State<QuizListPage> {
                                                                     USER_ID) ??
                                                             0,
                                                         categoryid: widget
-                                                                .category
-                                                                .categoryId ??
-                                                            0,
+                                                            .category
+                                                            .categoryId,
                                                         token: _sharedPreferences!
                                                                 .getString(
                                                                     BEARER_TOKEN) ??

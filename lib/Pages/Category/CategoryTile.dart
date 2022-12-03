@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:assessmentportal/AppConstants/constants.dart';
 import 'package:assessmentportal/DataModel/CategoryModel.dart';
 import 'package:assessmentportal/Pages/Quiz/QuizListPage.dart';
 import 'package:assessmentportal/Pages/Category/UpdateCategory.dart';
@@ -10,8 +11,12 @@ class CategoryTile extends StatelessWidget {
   int index;
   CategoryModel category;
   String token;
+  String role;
   CategoryTile(
-      {required this.index, required this.category, required this.token});
+      {required this.role,
+      required this.index,
+      required this.category,
+      required this.token});
 
   @override
   Widget build(BuildContext context) {
@@ -96,83 +101,88 @@ class CategoryTile extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                                Align(
-                                  alignment: Alignment.topRight,
-                                  child: PopupMenuButton(
-                                    // add icon, by default "3 dot" icon
-                                    // icon: Icon(Icons.book)
-                                    itemBuilder: (context) {
-                                      return [
-                                        const PopupMenuItem<int>(
-                                          value: 0,
-                                          child: Text("Delete"),
+                                (role != ROLE_NORMAL)
+                                    ? Align(
+                                        alignment: Alignment.topRight,
+                                        child: PopupMenuButton(
+                                          // add icon, by default "3 dot" icon
+                                          // icon: Icon(Icons.book)
+                                          itemBuilder: (context) {
+                                            return [
+                                              const PopupMenuItem<int>(
+                                                value: 0,
+                                                child: Text("Delete"),
+                                              ),
+                                              // PopupMenuItem<int>(
+                                              //   value: 1,
+                                              //   child: Switch.adaptive(
+                                              //       activeColor: Colors.blueGrey.shade600,
+                                              //       activeTrackColor: Colors.grey.shade400,
+                                              //       inactiveThumbColor:
+                                              //       Colors.blueGrey.shade600,
+                                              //       inactiveTrackColor: Colors.grey.shade400,
+                                              //       splashRadius: 50.0,
+                                              //       value: _isQuizActive,
+                                              //       onChanged: (value) {
+                                              //         setState(() {
+                                              //           _isQuizActive = value;
+                                              //         });
+                                              //       }),
+                                              // ),
+                                              const PopupMenuItem<int>(
+                                                value: 1,
+                                                child: Text("Update"),
+                                              ),
+                                            ];
+                                          },
+                                          onSelected: (value) async {
+                                            if (value == 0) {
+                                              //delete category
+                                              CategoryService categoryService =
+                                                  CategoryService();
+                                              String code =
+                                                  await categoryService
+                                                      .deleteCategory(
+                                                          token: token,
+                                                          categoryId: category
+                                                              .categoryId);
+                                              if (code == '2000') {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                        'Category deleted successfully'),
+                                                  ),
+                                                );
+                                              } else {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
+                                                    content: Text(
+                                                        'Category not deleted'),
+                                                  ),
+                                                );
+                                              }
+                                            } else if (value == 1) {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      UpdateCategory(
+                                                    token: token,
+                                                    title:
+                                                        category.categoryTitle,
+                                                    descp:
+                                                        category.categoryDescp,
+                                                    id: category.categoryId,
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          },
                                         ),
-                                        // PopupMenuItem<int>(
-                                        //   value: 1,
-                                        //   child: Switch.adaptive(
-                                        //       activeColor: Colors.blueGrey.shade600,
-                                        //       activeTrackColor: Colors.grey.shade400,
-                                        //       inactiveThumbColor:
-                                        //       Colors.blueGrey.shade600,
-                                        //       inactiveTrackColor: Colors.grey.shade400,
-                                        //       splashRadius: 50.0,
-                                        //       value: _isQuizActive,
-                                        //       onChanged: (value) {
-                                        //         setState(() {
-                                        //           _isQuizActive = value;
-                                        //         });
-                                        //       }),
-                                        // ),
-                                        const PopupMenuItem<int>(
-                                          value: 1,
-                                          child: Text("Update"),
-                                        ),
-                                      ];
-                                    },
-                                    onSelected: (value) async {
-                                      if (value == 0) {
-                                        //delete category
-                                        CategoryService categoryService =
-                                            CategoryService();
-                                        String code = await categoryService
-                                            .deleteCategory(
-                                                token: token,
-                                                categoryId:
-                                                    category.categoryId);
-                                        if (code == '2000') {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              content: Text(
-                                                  'Category deleted successfully'),
-                                            ),
-                                          );
-                                        } else {
-                                          ScaffoldMessenger.of(context)
-                                              .showSnackBar(
-                                            SnackBar(
-                                              content:
-                                                  Text('Category not deleted'),
-                                            ),
-                                          );
-                                        }
-                                      } else if (value == 1) {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                UpdateCategory(
-                                              token: token,
-                                              title: category.categoryTitle,
-                                              descp: category.categoryDescp,
-                                              id: category.categoryId,
-                                            ),
-                                          ),
-                                        );
-                                      }
-                                    },
-                                  ),
-                                ),
+                                      )
+                                    : Container(),
                               ],
                             ),
                           ),

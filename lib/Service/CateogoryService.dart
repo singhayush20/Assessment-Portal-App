@@ -40,9 +40,9 @@ class CategoryService {
   Future<List<QuizModel>> getAllQuizzesByCategory(
       String token, int categoryId) async {
     List<QuizModel> quizzes = [];
-    Map<String, dynamic> result = await _api.getAllQuizzesforCategory(
+    Map<String, dynamic> result = await _api.getAllQuizzesforCategoryandActive(
         token: token, categoryId: categoryId);
-    log('CategoryService: getAllQuizzes by category result: $result');
+    log('CategoryService: getAllQuizzes by category and active result: $result');
     String code = result['code'];
     if (code == '2000') {
       List<dynamic> categoryList = result['data'];

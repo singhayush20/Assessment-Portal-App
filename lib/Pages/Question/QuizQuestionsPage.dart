@@ -54,13 +54,27 @@ class _QuizQuestionsPageState extends State<QuizQuestionsPage> {
               ? [
                   IconButton(
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => AddQuestionPage(
-                              quiz: widget.quiz, token: widget.token),
-                        ),
-                      );
+                      int no_of_questions = widget.quiz.numberOfQuestions;
+                      if (_questionProvider.areQuestionsLoaded ==
+                          QuestionLoadingStatus.COMPLETED) {
+                        if (_questionProvider.questions.length ==
+                            no_of_questions) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => AddQuestionPage(
+                                  quiz: widget.quiz, token: widget.token),
+                            ),
+                          );
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content:
+                                  Text('Maximum number of questions reached'),
+                            ),
+                          );
+                        }
+                      }
                     },
                     icon: const Icon(
                       FontAwesomeIcons.plus,
@@ -94,6 +108,7 @@ class _QuizQuestionsPageState extends State<QuizQuestionsPage> {
                             index: index,
                             token: widget.token,
                             questionProvider: _questionProvider,
+                            role: widget.role,
                           ));
                     })
                 : Center(
@@ -231,11 +246,13 @@ class CustomListTile extends StatefulWidget {
   QuestionModel question;
   QuestionProvider questionProvider;
   int index;
+  String role;
   String token;
   CustomListTile(
       {required this.question,
       required this.index,
       required this.token,
+      required this.role,
       required this.questionProvider});
 
   @override
@@ -245,114 +262,123 @@ class CustomListTile extends StatefulWidget {
 class _CustomListTileState extends State<CustomListTile> {
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      return Padding(
-        padding: EdgeInsets.symmetric(
-          horizontal: constraints.maxWidth * 0.05,
-          vertical: constraints.maxHeight * 0.05,
-        ),
-        child: Stack(
-          children: [
-            Column(children: [
-              Container(
-                height: constraints.maxHeight * 0.2,
-                child: Container(
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    '${widget.index + 1}. ${widget.question.content}',
-                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: constraints.maxWidth * 0.05,
+            vertical: constraints.maxHeight * 0.05,
+          ),
+          child: Stack(
+            children: [
+              Column(children: [
+                Container(
+                  height: constraints.maxHeight * 0.2,
+                  child: Container(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      '${widget.index + 1}. ${widget.question.content}',
+                      style:
+                          TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+                    ),
                   ),
                 ),
-              ),
-              Container(
-                height: constraints.maxHeight * 0.7,
-                child: GridView.count(
-                  physics: const NeverScrollableScrollPhysics(),
-                  shrinkWrap: true,
-                  crossAxisSpacing: 10,
-                  mainAxisSpacing: 5,
-                  childAspectRatio:
-                      constraints.maxWidth / constraints.maxHeight * 1.5,
-                  crossAxisCount: 2,
-                  children: [
-                    QuestionChoice(
+                Container(
+                  height: constraints.maxHeight * 0.7,
+                  child: GridView.count(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    crossAxisSpacing: 10,
+                    mainAxisSpacing: 5,
+                    childAspectRatio:
+                        constraints.maxWidth / constraints.maxHeight * 1.5,
+                    crossAxisCount: 2,
+                    children: [
+                      QuestionChoice(
+                          question: widget.question,
+                          choice: '1. ${widget.question.option1}',
+                          token: widget.token),
+                      QuestionChoice(
                         question: widget.question,
-                        choice: '1. ${widget.question.option1}',
-                        token: widget.token),
-                    QuestionChoice(
-                      question: widget.question,
-                      choice: '2. ${widget.question.option2}',
-                      token: widget.token,
-                    ),
-                    QuestionChoice(
-                      question: widget.question,
-                      choice: '3. ${widget.question.option3}',
-                      token: widget.token,
-                    ),
-                    QuestionChoice(
-                      question: widget.question,
-                      choice: '4. ${widget.question.option4}',
-                      token: widget.token,
-                    ),
-                  ],
-                ),
-              ),
-            ]),
-            Positioned(
-              right: 0.5,
-              child: Container(
-                height: constraints.maxHeight * 0.2,
-                alignment: Alignment.center,
-                child: PopupMenuButton(
-                  itemBuilder: (context) {
-                    return [
-                      const PopupMenuItem<int>(
-                        value: 0,
-                        child: Text("Delete"),
+                        choice: '2. ${widget.question.option2}',
+                        token: widget.token,
                       ),
-                      const PopupMenuItem<int>(
-                        value: 1,
-                        child: Text("Update"),
+                      QuestionChoice(
+                        question: widget.question,
+                        choice: '3. ${widget.question.option3}',
+                        token: widget.token,
                       ),
-                    ];
-                  },
-                  onSelected: (value) async {
-                    if (value == 0) {
-                      //delete
-                      final QuestionService questionService = QuestionService();
-                      String code = await questionService.deleteQuestion(
-                          token: widget.token,
-                          questionId: widget.question.questionId ?? 0);
-                      if (code == '2000') {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content:
-                                    Text('Question deleted successfully')));
-                        widget.questionProvider.loadQuestions(
-                            quizId: widget.question.quiz!['quizId'].toString(),
-                            token: widget.token);
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Question not deleted')));
-                      }
-                    } else if (value == 1) {
-                      //update
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => UpdateQuestionPage(
-                                  question: widget.question,
-                                  token: widget.token)));
-                    }
-                  },
+                      QuestionChoice(
+                        question: widget.question,
+                        choice: '4. ${widget.question.option4}',
+                        token: widget.token,
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-            )
-          ],
-        ),
-      );
-    });
+              ]),
+              (widget.role != ROLE_NORMAL)
+                  ? Positioned(
+                      right: 0.5,
+                      child: Container(
+                        height: constraints.maxHeight * 0.2,
+                        alignment: Alignment.center,
+                        child: PopupMenuButton(
+                          itemBuilder: (context) {
+                            return [
+                              const PopupMenuItem<int>(
+                                value: 0,
+                                child: Text("Delete"),
+                              ),
+                              const PopupMenuItem<int>(
+                                value: 1,
+                                child: Text("Update"),
+                              ),
+                            ];
+                          },
+                          onSelected: (value) async {
+                            if (value == 0) {
+                              //delete
+                              final QuestionService questionService =
+                                  QuestionService();
+                              String code =
+                                  await questionService.deleteQuestion(
+                                      token: widget.token,
+                                      questionId:
+                                          widget.question.questionId ?? 0);
+                              if (code == '2000') {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text(
+                                            'Question deleted successfully')));
+                                widget.questionProvider.loadQuestions(
+                                    quizId: widget.question.quiz!['quizId']
+                                        .toString(),
+                                    token: widget.token);
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                        content: Text('Question not deleted')));
+                              }
+                            } else if (value == 1) {
+                              //update
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => UpdateQuestionPage(
+                                          question: widget.question,
+                                          token: widget.token)));
+                            }
+                          },
+                        ),
+                      ),
+                    )
+                  : Container(),
+            ],
+          ),
+        );
+      },
+    );
   }
 }
 

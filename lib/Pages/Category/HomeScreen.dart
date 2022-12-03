@@ -166,6 +166,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                               itemCount: categories.length,
                                               itemBuilder: (context, index) =>
                                                   CategoryTile(
+                                                role: _sharedPreferences
+                                                        .getString(ROLE) ??
+                                                    'null',
                                                 index: index,
                                                 category: categories[index],
                                                 token: _sharedPreferences
