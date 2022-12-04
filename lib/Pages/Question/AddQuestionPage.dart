@@ -1,6 +1,5 @@
 import 'package:assessmentportal/DataModel/QuizModel.dart';
 import 'package:assessmentportal/Service/QuestionService.dart';
-import 'package:assessmentportal/provider/QuestionProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -26,8 +25,6 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
   TextEditingController _answerController = TextEditingController();
   @override
   Widget build(BuildContext context) {
-    final QuestionProvider _questionProvider =
-        Provider.of<QuestionProvider>(context, listen: false);
     final height = MediaQuery.of(context).size.height -
         AppBar().preferredSize.height -
         MediaQuery.of(context).padding.top -
@@ -260,10 +257,7 @@ class _AddQuestionPageState extends State<AddQuestionPage> {
                           content: Text('Question added successfully'),
                         ),
                       );
-                      //re-load the questions
-                      _questionProvider.loadQuestions(
-                          quizId: widget.quiz.quizId.toString(),
-                          token: widget.token);
+
                       Navigator.pop(context);
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(

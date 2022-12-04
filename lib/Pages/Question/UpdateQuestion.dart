@@ -2,7 +2,6 @@ import 'dart:developer';
 
 import 'package:assessmentportal/DataModel/QuestionModel.dart';
 import 'package:assessmentportal/Service/QuestionService.dart';
-import 'package:assessmentportal/provider/QuestionProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -41,8 +40,6 @@ class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
 
   @override
   Widget build(BuildContext context) {
-    final QuestionProvider _questionProvider =
-        Provider.of<QuestionProvider>(context, listen: false);
     log('current question: ${widget.question.quiz}');
 
     final height = MediaQuery.of(context).size.height -
@@ -277,14 +274,7 @@ class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
                           content: Text('Question updated successfully'),
                         ),
                       );
-                      //re-load the questions
-                      // _questionProvider.loadQuestions(
-                      //     quizId:
-                      //         widget.question.quiz!['quiz']['quizId'].quizId,
-                      //     token: widget.token);
-                      _questionProvider.loadQuestions(
-                          quizId: widget.question.quiz!['quizId'].toString(),
-                          token: widget.token);
+
                       Navigator.pop(context);
                     } else {
                       String code = await questionService.deleteQuestion(
@@ -296,9 +286,6 @@ class _UpdateQuestionPageState extends State<UpdateQuestionPage> {
                             content: Text('Question not updated'),
                           ),
                         );
-                        _questionProvider.loadQuestions(
-                            quizId: widget.question.quiz!['quiz']['quizId'],
-                            token: widget.token);
                       }
                     }
                   }

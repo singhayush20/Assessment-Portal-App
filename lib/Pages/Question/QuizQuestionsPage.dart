@@ -6,7 +6,6 @@ import 'package:assessmentportal/DataModel/QuizModel.dart';
 import 'package:assessmentportal/Pages/Question/AddQuestionPage.dart';
 import 'package:assessmentportal/Pages/Question/UpdateQuestion.dart';
 import 'package:assessmentportal/Service/QuestionService.dart';
-import 'package:assessmentportal/provider/QuestionProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:loading_indicator/loading_indicator.dart';
@@ -23,16 +22,24 @@ class QuizQuestionsPage extends StatefulWidget {
 }
 
 class _QuizQuestionsPageState extends State<QuizQuestionsPage> {
+  late List<QuestionModel> questions = [];
+  QuestionLoadingStatus _areQuestionsLoaded = QuestionLoadingStatus.NOT_STARTED;
   @override
   void initState() {
-    // _loadQuestions();
+    _loadQuestions();
   }
 
-  // final QuestionService _questionService = QuestionService();
-  // Future<List<QuestionModel>> _loadQuestions() async {
-  //   return await _questionService.loadQuestions(
-  //       quizId: widget.quiz.quizId.toString(), token: widget.token);
-  // }
+  void _loadQuestions() async {
+    QuestionService questionService = QuestionService();
+    setState(() {
+      _areQuestionsLoaded = QuestionLoadingStatus.LOADING;
+    });
+    questions = await questionService.loadQuestions(
+        quizId: widget.quiz.quizId.toString(), token: widget.token);
+    setState(() {
+      _areQuestionsLoaded = QuestionLoadingStatus.COMPLETED;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -40,25 +47,24 @@ class _QuizQuestionsPageState extends State<QuizQuestionsPage> {
         AppBar().preferredSize.height -
         MediaQuery.of(context).padding.top -
         MediaQuery.of(context).padding.bottom;
-    final QuestionProvider _questionProvider =
-        Provider.of<QuestionProvider>(context);
-    if (_questionProvider.areQuestionsLoaded ==
-        QuestionLoadingStatus.NOT_STARTED) {
-      _questionProvider.loadQuestions(
-          quizId: widget.quiz.quizId.toString(), token: widget.token);
-    }
+
     return Scaffold(
         appBar: AppBar(
           title: Text('Questions'),
           actions: (widget.role != ROLE_NORMAL)
               ? [
                   IconButton(
+                    icon: Icon(FontAwesomeIcons.arrowsRotate),
+                    onPressed: () {
+                      _loadQuestions();
+                    },
+                  ),
+                  IconButton(
                     onPressed: () {
                       int no_of_questions = widget.quiz.numberOfQuestions;
-                      if (_questionProvider.areQuestionsLoaded ==
+                      if (_areQuestionsLoaded ==
                           QuestionLoadingStatus.COMPLETED) {
-                        if (_questionProvider.questions.length ==
-                            no_of_questions) {
+                        if (questions.length < no_of_questions) {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
@@ -83,12 +89,11 @@ class _QuizQuestionsPageState extends State<QuizQuestionsPage> {
                 ]
               : null,
         ),
-        body: (_questionProvider.areQuestionsLoaded ==
-                QuestionLoadingStatus.COMPLETED)
-            ? (_questionProvider.questions.isNotEmpty)
+        body: (_areQuestionsLoaded == QuestionLoadingStatus.COMPLETED)
+            ? (questions.isNotEmpty)
                 ? ListView.builder(
                     physics: NeverScrollableScrollPhysics(),
-                    itemCount: _questionProvider.questions.length,
+                    itemCount: questions.length,
                     itemBuilder: (context, index) {
                       return Container(
                           decoration: BoxDecoration(
@@ -104,10 +109,9 @@ class _QuizQuestionsPageState extends State<QuizQuestionsPage> {
                           margin: EdgeInsets.only(left: 5, right: 5, top: 5),
                           height: height * 0.2,
                           child: CustomListTile(
-                            question: _questionProvider.questions[index],
+                            question: questions[index],
                             index: index,
                             token: widget.token,
-                            questionProvider: _questionProvider,
                             role: widget.role,
                           ));
                     })
@@ -155,105 +159,21 @@ class _QuizQuestionsPageState extends State<QuizQuestionsPage> {
                         ),
                   ),
                 ),
-              )
-        // body: FutureBuilder<List<QuestionModel>>(
-        // future: _loadQuestions(),
-        // future: _questionProvider.loadQuestions(
-        // quizId: widget.quiz.quizId.toString(), token: widget.token),
-        // builder: (context, snapshot) {
-        //   log('data in snapshot: ${snapshot.data}');
-        //   if (!snapshot.hasData) {
-        //     return Center(
-        //       child: Container(
-        //         color: Colors.white,
-        //         height: height * 0.8,
-        //         alignment: Alignment.center,
-        //         child: Container(
-        //           height: 80,
-        //           width: 80,
-        //           child: const LoadingIndicator(
-        //               indicatorType: Indicator.lineScale,
-        //               colors: [
-        //                 Colors.purple,
-        //                 Colors.indigo,
-        //                 Colors.blue,
-        //                 Colors.green,
-        //                 Colors.red,
-        //               ],
-
-        //               /// Optional, The color collections
-        //               strokeWidth: 1,
-
-        //               /// Optional, The stroke of the line, only applicable to widget which contains line
-        //               backgroundColor: Colors.white,
-
-        //               /// Optional, Background of the widget
-        //               pathBackgroundColor: Colors.white
-
-        //               /// Optional, the stroke backgroundColor
-
-        //               ),
-        //         ),
-        //       ),
-        //     );
-        //   } else {
-        //     List<QuestionModel> questions = snapshot.data ?? [];
-        //     return (questions.length > 0)
-        //         ? ListView.builder(
-        //             physics: NeverScrollableScrollPhysics(),
-        //             itemCount: questions.length,
-        //             itemBuilder: (context, index) {
-        //               return Container(
-        //                   decoration: BoxDecoration(
-        //                     border: Border.all(
-        //                         color: Colors.black,
-        //                         width: 0.5,
-        //                         style: BorderStyle.solid),
-        //                     borderRadius: const BorderRadius.all(
-        //                       Radius.circular(20),
-        //                     ),
-        //                     color: Color.fromARGB(255, 244, 223, 223),
-        //                   ),
-        //                   margin: EdgeInsets.only(left: 5, right: 5, top: 5),
-        //                   height: height * 0.2,
-        //                   child: CustomListTile(
-        //                     question: questions[index],
-        //                     index: index,
-        //                     token: widget.token,
-        //                     questionProvider: _questionProvider,
-        //                   ));
-        //             })
-        //         : Center(
-        //             child: Container(
-        //               alignment: Alignment.center,
-        //               child: const Text(
-        //                 'No Questions in this Quiz',
-        //                 style: TextStyle(
-        //                   fontSize: 20,
-        //                   fontWeight: FontWeight.w600,
-        //                 ),
-        //               ),
-        //             ),
-        //           );
-        //   }
-        // },
-        //   ),
-        );
+              ));
   }
 }
 
 class CustomListTile extends StatefulWidget {
   QuestionModel question;
-  QuestionProvider questionProvider;
   int index;
   String role;
   String token;
-  CustomListTile(
-      {required this.question,
-      required this.index,
-      required this.token,
-      required this.role,
-      required this.questionProvider});
+  CustomListTile({
+    required this.question,
+    required this.index,
+    required this.token,
+    required this.role,
+  });
 
   @override
   State<CustomListTile> createState() => _CustomListTileState();
@@ -351,10 +271,6 @@ class _CustomListTileState extends State<CustomListTile> {
                                     const SnackBar(
                                         content: Text(
                                             'Question deleted successfully')));
-                                widget.questionProvider.loadQuestions(
-                                    quizId: widget.question.quiz!['quizId']
-                                        .toString(),
-                                    token: widget.token);
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
