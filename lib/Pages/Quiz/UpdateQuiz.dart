@@ -26,6 +26,7 @@ class _UpdateQuizPageState extends State<UpdateQuizPage> {
   final _descpController = TextEditingController();
   final _maxMarksController = TextEditingController();
   final _noOfQuestionsController = TextEditingController();
+  final _timeController = TextEditingController();
   late bool _isQuizActive;
   @override
   void initState() {
@@ -35,6 +36,7 @@ class _UpdateQuizPageState extends State<UpdateQuizPage> {
       _descpController.text = widget.quiz.description;
       _maxMarksController.text = widget.quiz.maxMarks;
       _noOfQuestionsController.text = widget.quiz.numberOfQuestions.toString();
+      _timeController.text = widget.quiz.time.toString();
     });
   }
 
@@ -54,7 +56,7 @@ class _UpdateQuizPageState extends State<UpdateQuizPage> {
       ),
       body: Container(
         margin: EdgeInsets.symmetric(
-          horizontal: width * 0.05,
+          horizontal: width * 0.02,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -164,29 +166,61 @@ class _UpdateQuizPageState extends State<UpdateQuizPage> {
                             ),
                           ),
                         ),
-                        Container(
-                          height: constraints.maxHeight * 0.2,
-                          alignment: Alignment.center,
-                          child: TextFormField(
-                            controller: _maxMarksController,
-                            obscureText: false,
-                            cursorColor: Colors.black,
-                            keyboardType: TextInputType.number,
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return 'Maximum marks cannot be empty';
-                              } else {
-                                return null;
-                              }
-                            },
-                            decoration: const InputDecoration(
-                              hintText: "Max. Marks",
-                              prefixIcon: Icon(
-                                FontAwesomeIcons.chevronRight,
-                                color: Colors.black,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Container(
+                              width: width * 0.4,
+                              height: constraints.maxHeight * 0.2,
+                              alignment: Alignment.center,
+                              child: TextFormField(
+                                controller: _maxMarksController,
+                                obscureText: false,
+                                cursorColor: Colors.black,
+                                keyboardType: TextInputType.number,
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'Maximum marks cannot be empty';
+                                  } else {
+                                    return null;
+                                  }
+                                },
+                                decoration: const InputDecoration(
+                                  hintText: "Max. Marks",
+                                  prefixIcon: Icon(
+                                    FontAwesomeIcons.chevronRight,
+                                    color: Colors.black,
+                                  ),
+                                ),
                               ),
                             ),
-                          ),
+                            Container(
+                              width: width * 0.5,
+                              height: constraints.maxHeight * 0.2,
+                              alignment: Alignment.center,
+                              child: TextFormField(
+                                controller: _timeController,
+                                obscureText: false,
+                                cursorColor: Colors.black,
+                                keyboardType: TextInputType.number,
+                                validator: (value) {
+                                  if (value!.isEmpty) {
+                                    return 'Time cannot be empty';
+                                  } else if (int.parse(value) <= 0) {
+                                    return 'Invalid time';
+                                  }
+                                  return null;
+                                },
+                                decoration: const InputDecoration(
+                                  hintText: "Time (in min.)",
+                                  prefixIcon: Icon(
+                                    FontAwesomeIcons.clock,
+                                    color: Colors.black,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         Row(
                           children: [
@@ -251,6 +285,7 @@ class _UpdateQuizPageState extends State<UpdateQuizPage> {
                       active: _isQuizActive,
                       categoryId: widget.categoryid,
                       userid: widget.userid,
+                      time: int.parse(_timeController.text),
                       quizid: widget.quiz.quizId,
                       token: widget.token,
                     );

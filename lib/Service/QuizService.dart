@@ -11,9 +11,10 @@ class QuizService {
       required bool isActive,
       required int categoryId,
       required int userId,
+      required int time,
       required String token}) async {
     QuizModel quiz = QuizModel(title, description, maxMarks.toString(),
-        isActive, categoryId, noOfQues);
+        isActive, categoryId, noOfQues, time);
 
     Map<String, dynamic> result =
         await _api.addNewQuiz(quiz: quiz, token: token, userid: userId);
@@ -36,9 +37,10 @@ class QuizService {
       required bool active,
       required int categoryId,
       required int userid,
+      required int time,
       required String token}) async {
     QuizModel quiz = QuizModel.saveQuiz(quizid, title, description, maxMarks,
-        active, categoryId, int.parse(numberOfQuestions));
+        active, categoryId, int.parse(numberOfQuestions), 10);
     Map<String, dynamic> result =
         await _api.updateQuiz(quiz: quiz, token: token, userid: userid);
     return result['code'];

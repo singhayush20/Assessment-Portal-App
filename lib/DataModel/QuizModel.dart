@@ -6,12 +6,20 @@ class QuizModel {
   bool _active;
   int _categoryId;
   int _numberOfQuestions;
+  int _time;
 
   QuizModel(this._title, this._description, this._maxMarks, this._active,
-      this._categoryId, this._numberOfQuestions);
+      this._categoryId, this._numberOfQuestions, this._time);
 
-  QuizModel.saveQuiz(this._quizId, this._title, this._description,
-      this._maxMarks, this._active, this._categoryId, this._numberOfQuestions);
+  QuizModel.saveQuiz(
+      this._quizId,
+      this._title,
+      this._description,
+      this._maxMarks,
+      this._active,
+      this._categoryId,
+      this._numberOfQuestions,
+      this._time);
 
   int get numberOfQuestions => _numberOfQuestions;
 
@@ -30,7 +38,7 @@ class QuizModel {
   String get title => _title;
 
   int get quizId => _quizId ?? 0;
-
+  int get time => _time;
   set title(String value) {
     _title = value;
   }
@@ -53,5 +61,9 @@ class QuizModel {
 
   set description(String value) {
     _description = value;
+  }
+
+  set time(int time) {
+    _time = time;
   }
 }

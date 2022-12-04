@@ -331,6 +331,7 @@ class API {
       "numberOfQuestions": quiz.numberOfQuestions.toString(),
       "active": quiz.active,
       "category": {"categoryId": quiz.categoryId},
+      "time": quiz.time,
     };
     Map<String, dynamic> queryParam = {"userid": userid};
     log('Creating quiz for: data: $data and user: $userid');
@@ -369,7 +370,8 @@ class API {
       "description": quiz.description,
       "maxMarks": quiz.maxMarks,
       "numberOfQuestions": quiz.numberOfQuestions.toString(),
-      "active": quiz.active
+      "active": quiz.active,
+      "time": quiz.time,
     };
     log('Updating quiz to ${data}');
 

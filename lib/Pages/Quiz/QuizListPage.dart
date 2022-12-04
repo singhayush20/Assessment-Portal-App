@@ -5,6 +5,7 @@ import 'package:assessmentportal/DataModel/CategoryModel.dart';
 import 'package:assessmentportal/DataModel/QuizModel.dart';
 import 'package:assessmentportal/Pages/Quiz/AddQuizPage.dart';
 import 'package:assessmentportal/Pages/Question/QuizQuestionsPage.dart';
+import 'package:assessmentportal/Pages/Quiz/AttempQuiz.dart';
 import 'package:assessmentportal/Pages/Quiz/UpdateQuiz.dart';
 import 'package:assessmentportal/Service/CateogoryService.dart';
 import 'package:assessmentportal/Service/QuizService.dart';
@@ -159,21 +160,23 @@ class _QuizListPageState extends State<QuizListPage> {
                                   ),
                                   child: ListTile(
                                     onTap: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) =>
-                                              QuizQuestionsPage(
-                                                  token: _sharedPreferences!
-                                                          .getString(
-                                                              BEARER_TOKEN) ??
-                                                      'null',
-                                                  role: _sharedPreferences!
-                                                          .getString(ROLE) ??
-                                                      'null',
-                                                  quiz: quizzes[index]),
-                                        ),
-                                      );
+                                      if (_sharedPreferences!.getString(ROLE) !=
+                                          ROLE_NORMAL) {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => QuizQuestionsPage(
+                                                token: _sharedPreferences!
+                                                        .getString(
+                                                            BEARER_TOKEN) ??
+                                                    'null',
+                                                role: _sharedPreferences!
+                                                        .getString(ROLE) ??
+                                                    'null',
+                                                quiz: quizzes[index]),
+                                          ),
+                                        );
+                                      }
                                     },
                                     leading: Container(
                                       height: double.infinity,
@@ -187,7 +190,22 @@ class _QuizListPageState extends State<QuizListPage> {
                                         ? Container(
                                             height: double.infinity,
                                             child: TextButton(
-                                              onPressed: () {},
+                                              onPressed: () {
+                                                //go to attempt quiz page
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        AttemptQuiz(
+                                                      quiz: quizzes[index],
+                                                      token: _sharedPreferences!
+                                                              .getString(
+                                                                  BEARER_TOKEN) ??
+                                                          'null',
+                                                    ),
+                                                  ),
+                                                );
+                                              },
                                               child: Text('Attempt'),
                                             ),
                                           )

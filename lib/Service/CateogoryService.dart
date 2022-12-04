@@ -57,6 +57,7 @@ class CategoryService {
               element['active'],
               element['category']['categoryId'],
               int.parse(element['numberOfQuestions']),
+              element['time'],
             ),
           );
         },
@@ -89,6 +90,7 @@ class CategoryService {
               element['active'],
               element['category']['categoryId'],
               int.parse(element['numberOfQuestions']),
+              element['time'],
             ),
           );
         },
