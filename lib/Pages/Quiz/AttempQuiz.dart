@@ -8,6 +8,7 @@ import 'package:assessmentportal/Service/QuestionService.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:sizer/sizer.dart';
 
@@ -23,6 +24,7 @@ class AttemptQuiz extends StatefulWidget {
 class _AttemptQuizState extends State<AttemptQuiz> {
   QuestionLoadingStatus _areQuestionsLoaded = QuestionLoadingStatus.NOT_STARTED;
   List<QuestionModel> questions = [];
+  late SharedPreferences _sharedPreferences;
   @override
   void initState() {
     super.initState();
@@ -34,6 +36,7 @@ class _AttemptQuizState extends State<AttemptQuiz> {
     setState(() {
       _areQuestionsLoaded = QuestionLoadingStatus.LOADING;
     });
+    _sharedPreferences = await SharedPreferences.getInstance();
     questions = await questionService.loadQuestions(
         quizId: widget.quiz.quizId.toString(), token: widget.token);
     setState(() {
@@ -76,32 +79,28 @@ class _AttemptQuizState extends State<AttemptQuiz> {
                 builder: (context, constraints) {
                   return Column(
                     children: [
-                      SizedBox(
-                        height: constraints.maxHeight * 0.1,
+                      QuizItem(
+                        constraints: constraints,
+                        text: 'Title: ' + widget.quiz.title.toString(),
                       ),
-                      Container(
-                        height: constraints.maxHeight * 0.2,
-                        alignment: Alignment.center,
-                        child: Text(' Quiz Title: ${widget.quiz.title}'),
+                      QuizItem(
+                        constraints: constraints,
+                        text: 'Description: ' +
+                            widget.quiz.description.toString(),
                       ),
-                      Container(
-                        height: constraints.maxHeight * 0.2,
-                        alignment: Alignment.center,
-                        child: Text('Description: ${widget.quiz.description}'),
+                      QuizItem(
+                        constraints: constraints,
+                        text:
+                            'Max Questions: ' + widget.quiz.maxMarks.toString(),
                       ),
-                      Container(
-                        height: constraints.maxHeight * 0.2,
-                        alignment: Alignment.center,
-                        child: Text(' Maximum Marks: ${widget.quiz.maxMarks}'),
+                      QuizItem(
+                        constraints: constraints,
+                        text: 'Number of questions: ' +
+                            widget.quiz.numberOfQuestions.toString(),
                       ),
-                      Container(
-                        height: constraints.maxHeight * 0.2,
-                        alignment: Alignment.center,
-                        child: Text(
-                            'Number of questions: ${widget.quiz.numberOfQuestions}'),
-                      ),
-                      SizedBox(
-                        height: constraints.maxHeight * 0.1,
+                      QuizItem(
+                        constraints: constraints,
+                        text: 'Duration: ' + widget.quiz.time.toString(),
                       ),
                     ],
                   );
@@ -120,16 +119,17 @@ class _AttemptQuizState extends State<AttemptQuiz> {
                     context,
                     MaterialPageRoute(
                       builder: (context) => StartQuiz(
+                          userId: _sharedPreferences.getInt(USER_ID) ?? 0,
                           questions: questions,
                           token: widget.token,
                           quizModel: widget.quiz),
                     ),
                   );
                 },
-                child: (_areQuestionsLoaded == LoadingStatus.LOADING ||
-                        _areQuestionsLoaded == LoadingStatus.NOT_STARTED)
-                    ? const LoadingIndicator(
-                        indicatorType: Indicator.ballClipRotate)
+                child: (_areQuestionsLoaded == QuestionLoadingStatus.LOADING ||
+                        _areQuestionsLoaded ==
+                            QuestionLoadingStatus.NOT_STARTED)
+                    ? const LoadingIndicator(indicatorType: Indicator.ballBeat)
                     : Text(
                         'Start Quiz',
                         style: TextStyle(
@@ -139,6 +139,26 @@ class _AttemptQuizState extends State<AttemptQuiz> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class QuizItem extends StatelessWidget {
+  BoxConstraints constraints;
+  String text;
+  QuizItem({required this.constraints, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: constraints.maxHeight * 0.2,
+      alignment: Alignment.center,
+      child: Text(
+        '$text',
+        style: TextStyle(
+          fontSize: 15.sp,
         ),
       ),
     );

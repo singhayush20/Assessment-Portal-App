@@ -8,6 +8,7 @@ class QuestionModel {
   String? option4;
   String correctAnswer;
   String? image;
+  String? submittedAnswer;
 
   QuestionModel(
       {this.questionId,

@@ -136,14 +136,6 @@ class _QuizListPageState extends State<QuizListPage> {
                               physics: NeverScrollableScrollPhysics(),
                               itemCount: quizzes.length,
                               itemBuilder: (BuildContext context, int index) {
-                                // return ListItem(
-                                //     quiz: quizzes[index],
-                                //     accountType:
-                                //         _sharedPreferences.getString(ROLE) ??
-                                //             'null',
-                                //     token: _sharedPreferences
-                                //             .getString(BEARER_TOKEN) ??
-                                //         'null');
                                 return Container(
                                   margin: EdgeInsets.only(
                                     bottom: 10,
@@ -299,6 +291,26 @@ class _QuizListPageState extends State<QuizListPage> {
                                             Expanded(
                                               child: Text(
                                                   "Marks: ${quizzes[index].numberOfQuestions}"),
+                                            ),
+                                          ],
+                                        ),
+                                        Row(
+                                          children: [
+                                            const Expanded(
+                                              child: Text(
+                                                "Duration: ",
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.w600),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: Text(
+                                                "${quizzes[index].time}",
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                              ),
                                             ),
                                           ],
                                         ),

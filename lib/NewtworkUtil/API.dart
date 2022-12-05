@@ -44,6 +44,7 @@ class API {
   final addQuestionUrl = '$domain/assessmentportal/question/create';
   final updateQuestionUrl = '$domain/assessmentportal/question/update';
   final deleteQuestionUrl = '$domain/assessmentportal/question/delete';
+  final evaluateQuizUrl = '$domain/assessmentportal/question/evaluate-quiz';
   final Dio _dio = Dio();
 
   Future<Map<String, dynamic>> loginUser(
@@ -480,6 +481,31 @@ class API {
     Response response =
         await _dio.delete(deleteQuestionUrl + "/$questionId", options: options);
     log('Delete question response $response');
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> evaluateQuiz(
+      {required Map<String, String> questions,
+      required int userId,
+      required String token,
+      required int maxMarks,
+      required int quizId}) async {
+    Options options = Options(
+        validateStatus: (_) => true,
+        contentType: Headers.jsonContentType,
+        responseType: ResponseType.json,
+        headers: {HttpHeaders.authorizationHeader: token});
+
+    Map<String, dynamic> queryPar = {
+      "userId": userId,
+      "quizId": quizId,
+      "maxMarks": maxMarks,
+    };
+    log('evaluating quiz for quizId $quizId and userId: $userId  data: $questions');
+
+    Response response = await _dio.post(evaluateQuizUrl,
+        queryParameters: queryPar, data: questions, options: options);
+    log('Quiz evaluation response: $response');
     return response.data;
   }
 }

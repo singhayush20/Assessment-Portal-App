@@ -4,7 +4,6 @@ import 'package:assessmentportal/AppConstants/constants.dart';
 import 'package:assessmentportal/Navigation/BottomNavigation.dart';
 import 'package:assessmentportal/Navigation/BottomNavigationProvider.dart';
 import 'package:assessmentportal/Register%20and%20Login/LoginPage.dart';
-import 'package:assessmentportal/provider/QuestionProvider.dart';
 import 'package:assessmentportal/provider/UserProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -46,9 +45,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (context) => UserProvider.initialze(_sharedPreferences),
         ),
-        ChangeNotifierProvider(
-          create: (context) => QuestionProvider.initialize(),
-        ),
+        // ChangeNotifierProvider(
+        //   create: (context) => QuestionProvider.initialize(),
+        // ),
       ],
       child: Sizer(
         builder: ((context, orientation, deviceType) {

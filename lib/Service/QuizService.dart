@@ -1,3 +1,4 @@
+import 'package:assessmentportal/DataModel/QuestionModel.dart';
 import 'package:assessmentportal/DataModel/QuizModel.dart';
 import 'package:assessmentportal/NewtworkUtil/API.dart';
 
@@ -43,6 +44,27 @@ class QuizService {
         active, categoryId, int.parse(numberOfQuestions), 10);
     Map<String, dynamic> result =
         await _api.updateQuiz(quiz: quiz, token: token, userid: userid);
+    return result['code'];
+  }
+
+  Future<Map<String, dynamic>> evaluateQuiz(
+      {required String token,
+      required int quizId,
+      required int userId,
+      required int maxMarks,
+      required List<QuestionModel> questions}) async {
+    Map<String, String> data = {};
+    questions.forEach((element) {
+      data.addAll(
+          {element.questionId.toString(): element.submittedAnswer ?? ''});
+    });
+
+    Map<String, dynamic> result = await _api.evaluateQuiz(
+        questions: data,
+        userId: userId,
+        token: token,
+        maxMarks: maxMarks,
+        quizId: quizId);
     return result['code'];
   }
 }
