@@ -47,6 +47,7 @@ dependencies:
   sizer: ^2.0.15
   loading_indicator: ^3.1.0
   flutter_countdown_timer: ^4.1.0
+  loader_overlay: ^2.1.0
 
 
 dev_dependencies:

@@ -115,6 +115,7 @@ class _AttemptQuizState extends State<AttemptQuiz> {
               width: width * 0.5,
               child: ElevatedButton(
                 onPressed: () async {
+                  Navigator.pop(context);
                   Navigator.push(
                     context,
                     MaterialPageRoute(

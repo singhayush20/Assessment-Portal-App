@@ -65,6 +65,6 @@ class QuizService {
         token: token,
         maxMarks: maxMarks,
         quizId: quizId);
-    return result['code'];
+    return result;
   }
 }
