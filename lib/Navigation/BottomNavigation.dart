@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:assessmentportal/AppConstants/constants.dart';
 import 'package:assessmentportal/Navigation/BottomNavigationProvider.dart';
 import 'package:assessmentportal/Pages/Profile/ProfilePage.dart';
+import 'package:assessmentportal/Pages/QuizResults/QuizResult.dart';
 import 'package:assessmentportal/Register%20and%20Login/LoginPage.dart';
 import 'package:assessmentportal/provider/UserProvider.dart';
 import 'package:flutter/material.dart';
@@ -34,7 +35,7 @@ class _BottomNavigationState extends State<BottomNavigation> {
   );
   static const List<Widget> _widgetOptions = <Widget>[
     HomeScreen(),
-    HomeScreen(),
+    QuizResultPage(),
     ProfilePage(),
   ];
   @override

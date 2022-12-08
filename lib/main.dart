@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:assessmentportal/AppConstants/constants.dart';
 import 'package:assessmentportal/Navigation/BottomNavigation.dart';
 import 'package:assessmentportal/Navigation/BottomNavigationProvider.dart';
+import 'package:assessmentportal/Pages/QuizResults/QuizResult.dart';
 import 'package:assessmentportal/Register%20and%20Login/LoginPage.dart';
 import 'package:assessmentportal/provider/UserProvider.dart';
 import 'package:flutter/material.dart';
@@ -99,9 +100,6 @@ class MyApp extends StatelessWidget {
             ),
             debugShowCheckedModeBanner: false,
             home: (isLoggedIn) ? BottomNavigation() : LoginPage(),
-            // home: RegisterDetails(
-            //   email: "ayush20apr@gmail.com",
-            // ),
           );
         }),
       ),
