@@ -3,10 +3,12 @@ import 'dart:developer';
 import 'package:assessmentportal/AppConstants/constants.dart';
 import 'package:assessmentportal/DataModel/CategoryModel.dart';
 import 'package:assessmentportal/DataModel/QuizModel.dart';
+import 'package:assessmentportal/NewtworkUtil/API.dart';
 import 'package:assessmentportal/Pages/Quiz/AddQuizPage.dart';
 import 'package:assessmentportal/Pages/Question/QuizQuestionsPage.dart';
 import 'package:assessmentportal/Pages/Quiz/AttempQuiz.dart';
 import 'package:assessmentportal/Pages/Quiz/UpdateQuiz.dart';
+import 'package:assessmentportal/Pages/QuizResults/UserHistory.dart';
 import 'package:assessmentportal/Service/CateogoryService.dart';
 import 'package:assessmentportal/Service/QuizService.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +30,7 @@ class _QuizListPageState extends State<QuizListPage> {
   List<QuizModel> quizzes = [];
   late CategoryService _categoryService;
   bool _areQuizzesLoaded = false;
+  final API api = API();
   @override
   void initState() {
     super.initState();
@@ -73,7 +76,7 @@ class _QuizListPageState extends State<QuizListPage> {
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.category.categoryTitle),
+        title: FittedBox(child: Text(widget.category.categoryTitle)),
         actions: (_sharedPreferences != null &&
                 _sharedPreferences!.getString(ROLE) != ROLE_NORMAL)
             ? [
@@ -130,60 +133,74 @@ class _QuizListPageState extends State<QuizListPage> {
                 ),
                 (_areQuizzesLoaded == true)
                     ? ((quizzes.length > 0)
-                        ? Container(
-                            height: height * 0.9,
-                            child: ListView.builder(
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: quizzes.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                return Container(
-                                  margin: EdgeInsets.only(
-                                    bottom: 10,
+                        ? ListView.builder(
+                            shrinkWrap: true,
+                            physics: NeverScrollableScrollPhysics(),
+                            itemCount: quizzes.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              return Container(
+                                margin: EdgeInsets.only(
+                                  bottom: 10,
+                                ),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                      color: Colors.black,
+                                      width: 0.5,
+                                      style: BorderStyle.solid),
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(20),
                                   ),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: Colors.black,
-                                        width: 0.5,
-                                        style: BorderStyle.solid),
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(20),
+                                  color: Color(0xFFBDDBF2),
+                                ),
+                                child: ListTile(
+                                  onTap: () {
+                                    if (_sharedPreferences!.getString(ROLE) !=
+                                        ROLE_NORMAL) {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              QuizQuestionsPage(
+                                                  token: _sharedPreferences!
+                                                          .getString(
+                                                              BEARER_TOKEN) ??
+                                                      'null',
+                                                  role: _sharedPreferences!
+                                                          .getString(ROLE) ??
+                                                      'null',
+                                                  quiz: quizzes[index]),
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  leading: Container(
+                                    height: double.infinity,
+                                    child: const Icon(
+                                      FontAwesomeIcons.paperclip,
                                     ),
-                                    color: Color(0xFFBDDBF2),
                                   ),
-                                  child: ListTile(
-                                    onTap: () {
-                                      if (_sharedPreferences!.getString(ROLE) !=
-                                          ROLE_NORMAL) {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => QuizQuestionsPage(
-                                                token: _sharedPreferences!
-                                                        .getString(
-                                                            BEARER_TOKEN) ??
-                                                    'null',
-                                                role: _sharedPreferences!
-                                                        .getString(ROLE) ??
-                                                    'null',
-                                                quiz: quizzes[index]),
-                                          ),
-                                        );
-                                      }
-                                    },
-                                    leading: Container(
-                                      height: double.infinity,
-                                      child: const Icon(
-                                        FontAwesomeIcons.paperclip,
-                                      ),
-                                    ),
-                                    trailing: (_sharedPreferences!
-                                                .getString(ROLE) ==
-                                            ROLE_NORMAL)
-                                        ? Container(
-                                            height: double.infinity,
-                                            child: TextButton(
-                                              onPressed: () {
-                                                //go to attempt quiz page
+                                  trailing: (_sharedPreferences!
+                                              .getString(ROLE) ==
+                                          ROLE_NORMAL)
+                                      ? Container(
+                                          height: double.infinity,
+                                          child: TextButton(
+                                            onPressed: () async {
+                                              //go to attempt quiz page if the user has not already attempted the quiz
+                                              Map<String, dynamic> result =
+                                                  await api.checkQuizAttempt(
+                                                      token: _sharedPreferences!
+                                                              .getString(
+                                                                  BEARER_TOKEN) ??
+                                                          'null',
+                                                      userId: _sharedPreferences!
+                                                              .getInt(
+                                                                  USER_ID) ??
+                                                          0,
+                                                      quizId: quizzes[index]
+                                                          .quizId);
+                                              if (result['status'] == 'false' ||
+                                                  result['status'] == false) {
                                                 Navigator.push(
                                                   context,
                                                   MaterialPageRoute(
@@ -197,161 +214,184 @@ class _QuizListPageState extends State<QuizListPage> {
                                                     ),
                                                   ),
                                                 );
-                                              },
-                                              child: Text('Attempt'),
-                                            ),
-                                          )
-                                        : PopupMenuButton(
-                                            // add icon, by default "3 dot" icon
-                                            // icon: Icon(Icons.book)
-                                            itemBuilder: (context) {
-                                              return [
-                                                const PopupMenuItem<int>(
-                                                  value: 0,
-                                                  child: Text("Delete"),
-                                                ),
-                                                const PopupMenuItem<int>(
-                                                  value: 1,
-                                                  child: Text("Update"),
-                                                ),
-                                              ];
-                                            },
-                                            onSelected: (value) async {
-                                              QuizService quizService =
-                                                  QuizService();
-                                              if (value == 0) {
-                                                log('Delete option chosen on quiz: ${quizzes[index].quizId}');
-                                                String code = await quizService
-                                                    .deleteQuiz(
-                                                        quizid: quizzes[index]
-                                                            .quizId,
-                                                        token: _sharedPreferences!
-                                                                .getString(
-                                                                    BEARER_TOKEN) ??
-                                                            'null');
-                                                if (code == '2000') {
-                                                  log('Quiz is deleted');
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                          const SnackBar(
+                                              } else {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                  SnackBar(
                                                     content: Text(
-                                                        'Quiz deleted Successfully!'),
-                                                  ));
-                                                  setState(() {
-                                                    quizzes.removeAt(index);
-                                                  });
-                                                } else {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                          const SnackBar(
-                                                    content: Text(
-                                                        'Quiz not deleted!'),
-                                                  ));
-                                                }
-                                              } else if (value == 1) {
-                                                print(
-                                                    "Update quiz selected on ${quizzes[index].quizId}");
-                                                Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                    builder: (context) => UpdateQuizPage(
-                                                        userid: _sharedPreferences!
-                                                                .getInt(
-                                                                    USER_ID) ??
-                                                            0,
-                                                        categoryid: widget
-                                                            .category
-                                                            .categoryId,
-                                                        token: _sharedPreferences!
-                                                                .getString(
-                                                                    BEARER_TOKEN) ??
-                                                            'null',
-                                                        quiz: quizzes[index]),
+                                                        'You have already attempted this quiz!'),
                                                   ),
                                                 );
                                               }
                                             },
+                                            child: Text('Attempt'),
                                           ),
-                                    title:
-                                        Text("Title: ${quizzes[index].title}"),
-                                    subtitle: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceAround,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                            "About: ${quizzes[index].description}"),
-                                        Row(
-                                          children: [
-                                            Expanded(
-                                              child: Text(
-                                                  "Questions: ${quizzes[index].numberOfQuestions}"),
-                                            ),
-                                            Expanded(
-                                              child: Text(
-                                                  "Marks: ${quizzes[index].numberOfQuestions}"),
-                                            ),
-                                          ],
-                                        ),
-                                        Row(
-                                          children: [
-                                            const Expanded(
-                                              child: Text(
-                                                "Duration: ",
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.w600),
+                                        )
+                                      : PopupMenuButton(
+                                          // add icon, by default "3 dot" icon
+                                          // icon: Icon(Icons.book)
+                                          itemBuilder: (context) {
+                                            return [
+                                              const PopupMenuItem<int>(
+                                                value: 0,
+                                                child: Text("Delete"),
                                               ),
-                                            ),
-                                            Expanded(
-                                              child: Text(
-                                                "${quizzes[index].time}",
-                                                style: TextStyle(
-                                                  fontWeight: FontWeight.w600,
+                                              const PopupMenuItem<int>(
+                                                value: 1,
+                                                child: Text("Update"),
+                                              ),
+                                              const PopupMenuItem<int>(
+                                                value: 2,
+                                                child: Text("Attempts"),
+                                              ),
+                                            ];
+                                          },
+                                          onSelected: (value) async {
+                                            QuizService quizService =
+                                                QuizService();
+                                            if (value == 0) {
+                                              log('Delete option chosen on quiz: ${quizzes[index].quizId}');
+                                              String code =
+                                                  await quizService.deleteQuiz(
+                                                      quizid:
+                                                          quizzes[index].quizId,
+                                                      token: _sharedPreferences!
+                                                              .getString(
+                                                                  BEARER_TOKEN) ??
+                                                          'null');
+                                              if (code == '2000') {
+                                                log('Quiz is deleted');
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                        const SnackBar(
+                                                  content: Text(
+                                                      'Quiz deleted Successfully!'),
+                                                ));
+                                                setState(() {
+                                                  quizzes.removeAt(index);
+                                                });
+                                              } else {
+                                                ScaffoldMessenger.of(context)
+                                                    .showSnackBar(
+                                                        const SnackBar(
+                                                  content:
+                                                      Text('Quiz not deleted!'),
+                                                ));
+                                              }
+                                            } else if (value == 1) {
+                                              print(
+                                                  "Update quiz selected on ${quizzes[index].quizId}");
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => UpdateQuizPage(
+                                                      userid: _sharedPreferences!
+                                                              .getInt(
+                                                                  USER_ID) ??
+                                                          0,
+                                                      categoryid: widget
+                                                          .category.categoryId,
+                                                      token: _sharedPreferences!
+                                                              .getString(
+                                                                  BEARER_TOKEN) ??
+                                                          'null',
+                                                      quiz: quizzes[index]),
                                                 ),
-                                              ),
-                                            ),
-                                          ],
+                                              );
+                                            } else if (value == 2) {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      UserHistory(
+                                                    token: _sharedPreferences!
+                                                            .getString(
+                                                                BEARER_TOKEN) ??
+                                                        'null',
+                                                    quizId:
+                                                        quizzes[index].quizId,
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          },
                                         ),
-                                        Row(
-                                          children: [
-                                            const Expanded(
-                                              child: Text(
-                                                "Status: ",
-                                                style: TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.w600),
+                                  title: Text("Title: ${quizzes[index].title}"),
+                                  subtitle: Column(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                          "About: ${quizzes[index].description}"),
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                            child: Text(
+                                                "Questions: ${quizzes[index].numberOfQuestions}"),
+                                          ),
+                                          Expanded(
+                                            child: Text(
+                                                "Marks: ${quizzes[index].numberOfQuestions}"),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          const Expanded(
+                                            child: Text(
+                                              "Duration: ",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: Text(
+                                              "${quizzes[index].time}",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
                                               ),
                                             ),
-                                            Expanded(
-                                              child: (quizzes[index].active)
-                                                  ? const Text(
-                                                      "Active",
-                                                      style: TextStyle(
-                                                        color: Colors.green,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                      ),
-                                                    )
-                                                  : Text(
-                                                      "Inactive",
-                                                      style: TextStyle(
-                                                        color: Color(Colors
-                                                            .red[900]!.value),
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                      ),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        children: [
+                                          const Expanded(
+                                            child: Text(
+                                              "Status: ",
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w600),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            child: (quizzes[index].active)
+                                                ? const Text(
+                                                    "Active",
+                                                    style: TextStyle(
+                                                      color: Colors.green,
+                                                      fontWeight:
+                                                          FontWeight.w600,
                                                     ),
-                                            ),
-                                          ],
-                                        ),
-                                      ],
-                                    ),
+                                                  )
+                                                : Text(
+                                                    "Inactive",
+                                                    style: TextStyle(
+                                                      color: Color(Colors
+                                                          .red[900]!.value),
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                    ),
+                                                  ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
-                                );
-                              },
-                            ),
+                                ),
+                              );
+                            },
                           )
                         : Container(
                             height: height * 0.85,

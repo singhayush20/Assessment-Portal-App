@@ -1,7 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:assessmentportal/AppConstants/constants.dart';
+import 'package:assessmentportal/AppConstants/URLs.dart';
 import 'package:assessmentportal/DataModel/CategoryModel.dart';
 import 'package:assessmentportal/DataModel/QuestionModel.dart';
 import 'package:assessmentportal/DataModel/QuizModel.dart';
@@ -9,42 +9,6 @@ import 'package:assessmentportal/DataModel/UserModel.dart';
 import 'package:dio/dio.dart';
 
 class API {
-  final sendEmailOTPUrl =
-      "${domain}/assessmentportal/authenticate/verifyemail/sendotp";
-  final verifyEmailOTPUrl =
-      "${domain}/assessmentportal/authenticate/verifyemail/verify-otp";
-  final registerNormalUserUrl =
-      "${domain}/assessmentportal/authenticate/register/normal";
-  final registerAdminUserUrl =
-      "$domain/assessmentportal/authenticate/register/admin?key=adminKey";
-  final forgetPasswordSendOTPUrl =
-      "$domain/assessmentportal/authenticate/verifyemail/reset-password-otp";
-  final verifyForgetPasswordSendOTPUrl =
-      "$domain/assessmentportal/authenticate/verifyemail/reset-password";
-  final loginUserUrl = "$domain/assessmentportal/authenticate/login";
-  final loadUserByEmailUrl = "$domain/assessmentportal/users/";
-  final updateUserUrl = "$domain/assessmentportal/users/update";
-  final getAllCategoriesUrl = "$domain/assessmentportal/category/all";
-  final getQuizzesForCategoryUrl =
-      "$domain/assessmentportal/quiz/getByCategory";
-  final getQuizzesForCategoryandActiveUrl =
-      "$domain/assessmentportal/quiz/active";
-  final addNewCategoryUrl = "$domain/assessmentportal/category/create";
-  final loadQuizzesAdminUrl = "$domain/assessmentportal/quiz/getByAdmin/";
-  final addNewQuizUrl = "$domain/assessmentportal/quiz/create";
-  final deleteQuizUrl = "$domain/assessmentportal/quiz/delete";
-  final updateQuizUrl = "$domain/assessmentportal/quiz/update";
-  final deleteCategoryUrl = '$domain/assessmentportal/category/delete';
-  final updateCategoryUrl = "$domain/assessmentportal/category/update";
-  final enrollInCateogryUrl =
-      "$domain/assessmentportal/users/enrolledcategories/all/add";
-  final getAllEnrolledCategoriesUrl =
-      '$domain/assessmentportal/users/enrolledcategories/all';
-  final loadQuestionsUrl = '$domain/assessmentportal/question/quiz';
-  final addQuestionUrl = '$domain/assessmentportal/question/create';
-  final updateQuestionUrl = '$domain/assessmentportal/question/update';
-  final deleteQuestionUrl = '$domain/assessmentportal/question/delete';
-  final evaluateQuizUrl = '$domain/assessmentportal/question/evaluate-quiz';
   final Dio _dio = Dio();
 
   Future<Map<String, dynamic>> loginUser(
@@ -506,6 +470,54 @@ class API {
     Response response = await _dio.post(evaluateQuizUrl,
         queryParameters: queryPar, data: questions, options: options);
     log('Quiz evaluation response: $response');
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> checkQuizAttempt(
+      {required String token, required int userId, required int quizId}) async {
+    Options options = Options(
+        validateStatus: (_) => true,
+        contentType: Headers.jsonContentType,
+        responseType: ResponseType.json,
+        headers: {HttpHeaders.authorizationHeader: token});
+    Map<String, dynamic> queryParams = {
+      "userId": userId,
+      "quizId": quizId,
+    };
+    log('Checking if user attempted quiz: $queryParams');
+    Response response = await _dio.get(checkQuizAttemptUrl,
+        options: options, queryParameters: queryParams);
+    log('Check quiz attempt result: $response');
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> getAllQuizzesForUser(
+      {required String token, required int userId}) async {
+    Options options = Options(
+        validateStatus: (_) => true,
+        contentType: Headers.jsonContentType,
+        responseType: ResponseType.json,
+        headers: {HttpHeaders.authorizationHeader: token});
+    Map<String, dynamic> queryParams = {"userId": userId};
+    log('Fetching quizHistory for user: $queryParams');
+    Response response = await _dio.get(getAllAttemptedQuizzesUrl,
+        options: options, queryParameters: queryParams);
+    log('Quiz History response for user: $response');
+    return response.data;
+  }
+
+  Future<Map<String, dynamic>> getAllUsersForQuiz(
+      {required String token, required int quizId}) async {
+    Options options = Options(
+        validateStatus: (_) => true,
+        contentType: Headers.jsonContentType,
+        responseType: ResponseType.json,
+        headers: {HttpHeaders.authorizationHeader: token});
+    Map<String, dynamic> queryParams = {"quizId": quizId};
+    log('Fetching quizHistory for quiz: $queryParams');
+    Response response = await _dio.get(getAllUsersForQuizUrl,
+        options: options, queryParameters: queryParams);
+    log('Quiz History response for quiz: $response');
     return response.data;
   }
 }

@@ -356,6 +356,11 @@ class _StartQuizState extends State<StartQuiz> {
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
                               //Max marks
+                              // "noOfQuestions": 2,
+                              // "questionsAttempted": 2,
+                              // "correctQuestions": 0,
+                              // "maxMarks": 10,
+                              // "marksObtained": 0,
                               InfoItem(
                                   constraints: constraints,
                                   title: "Max Mark:",
@@ -364,20 +369,20 @@ class _StartQuizState extends State<StartQuiz> {
                               InfoItem(
                                   constraints: constraints,
                                   title: "Marks obtained:  ",
-                                  descp: '${result['data']['marks obtained']}'),
+                                  descp: '${result['data']['marksObtained']}'),
                               //Questions attempted
                               InfoItem(
                                   constraints: constraints,
                                   title: "Questions attempted:  ",
                                   descp:
-                                      '${result['data']['attempted']}/${widget.quizModel.numberOfQuestions}'),
+                                      '${result['data']['questionsAttempted']}/${widget.quizModel.numberOfQuestions}'),
 
                               //Correct answers
                               InfoItem(
                                   constraints: constraints,
                                   title: "Correct Answers:  ",
                                   descp:
-                                      '${result['data']['correct answers']}'),
+                                      '${result['data']['correctQuestions']}'),
                             ],
                           );
                         },

@@ -1,8 +1,11 @@
 import 'dart:developer';
 
+import 'package:assessmentportal/AppConstants/constants.dart';
+import 'package:assessmentportal/NewtworkUtil/API.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
+import 'package:loading_indicator/loading_indicator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import 'package:sizer/sizer.dart';
 
 class QuizResultPage extends StatefulWidget {
@@ -13,31 +16,32 @@ class QuizResultPage extends StatefulWidget {
 
 class _QuizResultPageState extends State<QuizResultPage> {
   //This is temporary for dev
-  final Map<String, dynamic> quizHistoryResult = {
-    "data": [
-      {
-        "id": {"userId": 98, "quizId": 74},
-        "noOfQuestions": 10,
-        "questionsAttempted": 8,
-        "correctQuestions": 6,
-        "maxMarks": 10,
-        "marksObtained": 6
-      },
-      {
-        "id": {"userId": 98, "quizId": 87},
-        "noOfQuestions": 10,
-        "questionsAttempted": 5,
-        "correctQuestions": 4,
-        "maxMarks": 10,
-        "marksObtained": 4
-      }
-    ],
-    "message": "Success",
-    "code": "2000"
-  };
+  late Map<String, dynamic> quizHistoryResult;
+
+  late SharedPreferences _sharedPreferences;
+
+  Future<Map<String, dynamic>> _loadHistory() async {
+    await _initializePrefs();
+    ;
+    final API api = API();
+    return await api.getAllQuizzesForUser(
+        token: _sharedPreferences.getString(BEARER_TOKEN) ?? 'null',
+        userId: _sharedPreferences.getInt(USER_ID) ?? 0);
+  }
+
   final AppBar appBar = AppBar(
     title: Text('Previous Quizzes'),
   );
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  Future<void> _initializePrefs() async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+  }
+
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height -
@@ -47,23 +51,76 @@ class _QuizResultPageState extends State<QuizResultPage> {
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: appBar,
-      body: ListView.separated(
-        shrinkWrap: true,
-        physics: BouncingScrollPhysics(),
-        separatorBuilder: (context, index) {
-          return Divider(
-            indent: 100,
-            endIndent: 100,
-            color: Color(0xFF5155E3),
-            thickness: 4,
-          );
-        },
-        itemCount: quizHistoryResult['data'].length,
-        itemBuilder: (context, index) {
-          return CustomListTile(
-              quiz: quizHistoryResult['data'][index], index: index);
-        },
-      ),
+      body: FutureBuilder(
+          future: _loadHistory(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              quizHistoryResult = snapshot.data as Map<String, dynamic>;
+              if (quizHistoryResult['data'].length > 0) {
+                return ListView.separated(
+                  shrinkWrap: true,
+                  physics: const BouncingScrollPhysics(),
+                  separatorBuilder: (context, index) {
+                    return const Divider(
+                      indent: 100,
+                      endIndent: 100,
+                      color: Color(0xFF5155E3),
+                      thickness: 4,
+                    );
+                  },
+                  itemCount: quizHistoryResult['data'].length,
+                  itemBuilder: (context, index) {
+                    return CustomListTile(
+                        quiz: quizHistoryResult['data'][index], index: index);
+                  },
+                );
+              } else {
+                return Center(
+                  child: Text(
+                    'No records found!',
+                    style: TextStyle(
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.w900,
+                    ),
+                  ),
+                );
+              }
+            } else {
+              return Center(
+                child: Container(
+                  color: Colors.white,
+                  height: height * 0.8,
+                  alignment: Alignment.center,
+                  child: Container(
+                    height: 80,
+                    width: 80,
+                    child: const LoadingIndicator(
+                        indicatorType: Indicator.lineScale,
+                        colors: [
+                          Colors.purple,
+                          Colors.indigo,
+                          Colors.blue,
+                          Colors.green,
+                          Colors.red,
+                        ],
+
+                        /// Optional, The color collections
+                        strokeWidth: 1,
+
+                        /// Optional, The stroke of the line, only applicable to widget which contains line
+                        backgroundColor: Colors.white,
+
+                        /// Optional, Background of the widget
+                        pathBackgroundColor: Colors.white
+
+                        /// Optional, the stroke backgroundColor
+
+                        ),
+                  ),
+                ),
+              );
+            }
+          }),
     );
   }
 }
@@ -116,7 +173,7 @@ class CustomListTile extends StatelessWidget {
             color: Color(0xFFFD7F92),
           ),
           child: Text(
-            'Quiz Name',
+            '${quiz['quiz']['title']}',
             style: TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.w900,

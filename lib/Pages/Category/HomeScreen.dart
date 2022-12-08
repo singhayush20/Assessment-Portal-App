@@ -53,10 +53,14 @@ class _HomeScreenState extends State<HomeScreen> {
         _sharedPreferences.getString(BEARER_TOKEN) ?? 'null',
         _sharedPreferences.getInt(USER_ID) ?? 0,
         _sharedPreferences.getString(ROLE) ?? 'NULL');
-    setState(() {
-      log('Setting categories loaded to true');
-      _areCategoriesLoaded = true;
-    });
+    //check if thw widget is mounted to ensure that no state is changed if
+    //the widget is not in widget tree- when tabs are switched very quickly
+    if (mounted) {
+      setState(() {
+        log('Setting categories loaded to true');
+        _areCategoriesLoaded = true;
+      });
+    }
   }
 
   @override
@@ -101,14 +105,15 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.white,
       body: LayoutBuilder(
         builder: (context, screenSize) {
-          return Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(
-                horizontal: screenSize.maxWidth * 0.05,
-              ),
-              child: (userProvider.loadingStatus == LoadingStatus.COMPLETED)
-                  ? RefreshIndicator(
-                      onRefresh: _loadCategories,
+          return (userProvider.loadingStatus == LoadingStatus.COMPLETED)
+              ? RefreshIndicator(
+                  onRefresh: _loadCategories,
+                  child: SingleChildScrollView(
+                    physics: AlwaysScrollableScrollPhysics(),
+                    child: Container(
+                      height: screenSize.maxHeight,
+                      margin: EdgeInsets.symmetric(
+                          horizontal: screenSize.maxWidth * 0.05),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: [
@@ -155,46 +160,36 @@ class _HomeScreenState extends State<HomeScreen> {
                                       ),
                           ),
                           (_areCategoriesLoaded == true)
-                              ? Container(
-                                  height: screenSize.maxHeight * 0.8,
-                                  color: Colors.white,
-                                  child: (categories.length > 0)
-                                      ? LayoutBuilder(
-                                          builder: (context, constraints) {
-                                            return GridView.builder(
-                                              physics: BouncingScrollPhysics(),
-                                              itemCount: categories.length,
-                                              itemBuilder: (context, index) =>
-                                                  CategoryTile(
-                                                role: _sharedPreferences
-                                                        .getString(ROLE) ??
-                                                    'null',
-                                                index: index,
-                                                category: categories[index],
-                                                token: _sharedPreferences
-                                                        .getString(
-                                                            BEARER_TOKEN) ??
-                                                    'null',
-                                              ),
-                                              gridDelegate:
-                                                  SliverGridDelegateWithFixedCrossAxisCount(
-                                                crossAxisCount:
-                                                    constraints.maxWidth > 700
-                                                        ? 4
-                                                        : 2,
-                                                // childAspectRatio: 5,
-                                              ),
-                                            );
-                                          },
-                                        )
-                                      : Center(
-                                          child: Text(
-                                            'No categories found',
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.w700),
-                                          ),
-                                        ),
-                                )
+                              ? (categories.length > 0)
+                                  ? GridView.builder(
+                                      physics: NeverScrollableScrollPhysics(),
+                                      shrinkWrap: true,
+                                      itemCount: categories.length,
+                                      itemBuilder: (context, index) =>
+                                          CategoryTile(
+                                        role: _sharedPreferences
+                                                .getString(ROLE) ??
+                                            'null',
+                                        index: index,
+                                        category: categories[index],
+                                        token: _sharedPreferences
+                                                .getString(BEARER_TOKEN) ??
+                                            'null',
+                                      ),
+                                      gridDelegate:
+                                          SliverGridDelegateWithFixedCrossAxisCount(
+                                        crossAxisCount:
+                                            screenSize.maxWidth > 700 ? 4 : 2,
+                                        // childAspectRatio: 5,
+                                      ),
+                                    )
+                                  : Center(
+                                      child: Text(
+                                        'No categories found',
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.w700),
+                                      ),
+                                    )
                               : Center(
                                   child: Container(
                                     color: Colors.white,
@@ -230,40 +225,40 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ),
                         ],
                       ),
+                    ),
+                  ),
+                )
+              : ((userProvider.loadingStatus == LoadingStatus.LOADING)
+                  ? Center(
+                      child: Container(
+                        color: Colors.white,
+                        height: 100,
+                        width: 100,
+                        child: const LoadingIndicator(
+                            indicatorType: Indicator.ballPulse,
+                            colors: [Colors.red, Colors.blue, Colors.green],
+
+                            /// Optional, The color collections
+                            strokeWidth: 1,
+
+                            /// Optional, The stroke of the line, only applicable to widget which contains line
+                            backgroundColor: Colors.white,
+
+                            /// Optional, Background of the widget
+                            pathBackgroundColor: Colors.white
+
+                            /// Optional, the stroke backgroundColor
+
+                            ),
+                      ),
                     )
-                  : ((userProvider.loadingStatus == LoadingStatus.LOADING)
-                      ? Center(
-                          child: Container(
-                            color: Colors.white,
-                            height: 100,
-                            width: 100,
-                            child: const LoadingIndicator(
-                                indicatorType: Indicator.ballPulse,
-                                colors: [Colors.red, Colors.blue, Colors.green],
-
-                                /// Optional, The color collections
-                                strokeWidth: 1,
-
-                                /// Optional, The stroke of the line, only applicable to widget which contains line
-                                backgroundColor: Colors.white,
-
-                                /// Optional, Background of the widget
-                                pathBackgroundColor: Colors.white
-
-                                /// Optional, the stroke backgroundColor
-
-                                ),
-                          ),
-                        )
-                      : const Text(
-                          'No data',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        )),
-            ),
-          );
+                  : const Text(
+                      'No data',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ));
         },
       ),
     );

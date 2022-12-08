@@ -11,6 +11,7 @@ import 'package:loading_indicator/loading_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:sizer/sizer.dart';
 
 import '../Pages/Category/HomeScreen.dart';
 
@@ -33,9 +34,13 @@ class _BottomNavigationState extends State<BottomNavigation> {
       'Quizzo',
     ),
   );
-  static const List<Widget> _widgetOptions = <Widget>[
+  static const List<Widget> _widgetOptionsNormal = <Widget>[
     HomeScreen(),
     QuizResultPage(),
+    ProfilePage(),
+  ];
+  static const List<Widget> _widgetOptionsAdmin = <Widget>[
+    HomeScreen(),
     ProfilePage(),
   ];
   @override
@@ -62,25 +67,40 @@ class _BottomNavigationState extends State<BottomNavigation> {
     return Scaffold(
       drawer: NavigationDrawer(userProvider),
       appBar: appBar,
-      bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.list),
-              label: 'MyQuizzes',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(FontAwesomeIcons.user),
-              label: 'Profile',
-            ),
-          ],
-          currentIndex: bottomNavigationProvider.selectedIndex,
-          onTap: /*_onTap*/ bottomNavigationProvider
-              .onItemTapped //_onItemTapped,
-          ),
+      bottomNavigationBar:
+          (!(userProvider.loadingStatus == LoadingStatus.NOT_STARTED ||
+                  userProvider.loadingStatus == LoadingStatus.LOADING))
+              ? BottomNavigationBar(
+                  items: (userProvider.accountType == AccountType.NORMAL)
+                      ? <BottomNavigationBarItem>[
+                          const BottomNavigationBarItem(
+                            icon: Icon(Icons.home),
+                            label: 'Home',
+                          ),
+                          const BottomNavigationBarItem(
+                            icon: Icon(Icons.list),
+                            label: 'MyQuizzes',
+                          ),
+                          const BottomNavigationBarItem(
+                            icon: Icon(FontAwesomeIcons.user),
+                            label: 'Profile',
+                          ),
+                        ]
+                      : <BottomNavigationBarItem>[
+                          const BottomNavigationBarItem(
+                            icon: Icon(Icons.home),
+                            label: 'Home',
+                          ),
+                          const BottomNavigationBarItem(
+                            icon: Icon(FontAwesomeIcons.user),
+                            label: 'Profile',
+                          )
+                        ],
+                  currentIndex: bottomNavigationProvider.selectedIndex,
+                  onTap: /*_onTap*/ bottomNavigationProvider
+                      .onItemTapped //_onItemTapped,
+                  )
+              : null,
       body: // _widgetOptions.elementAt(_selectedIndex),
           (userProvider.loadingStatus == LoadingStatus.NOT_STARTED ||
                   userProvider.loadingStatus == LoadingStatus.LOADING)
@@ -119,8 +139,11 @@ class _BottomNavigationState extends State<BottomNavigation> {
                 )
               : Container(
                   height: height,
-                  child: _widgetOptions
-                      .elementAt(bottomNavigationProvider.selectedIndex)),
+                  child: (userProvider.accountType == AccountType.NORMAL)
+                      ? _widgetOptionsNormal
+                          .elementAt(bottomNavigationProvider.selectedIndex)
+                      : _widgetOptionsAdmin
+                          .elementAt(bottomNavigationProvider.selectedIndex)),
     );
   }
 }
@@ -153,44 +176,13 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
         child: ListView(
           children: <Widget>[
             DrawerHeader(
-              child:
-                  // child: Column(
-                  //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  //   crossAxisAlignment: CrossAxisAlignment.start,
-                  //   children: [
-                  //     Expanded(
-                  Text(
+              child: Text(
                 'Quizzo',
                 style: TextStyle(
-                  fontSize: 20,
+                  fontSize: 20.sp,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              // ),
-              //     Expanded(
-              //       child: Column(children: [
-              //         Expanded(
-              //           child: Text(
-              //             '${namestorage.getItem('name')}',
-              //             style: TextStyle(
-              //               fontSize: 20,
-              //               fontWeight: FontWeight.bold,
-              //             ),
-              //           ),
-              //         ),
-              //         Expanded(
-              //           child: Text(
-              //             '${mobileNumberstorage.getItem('mobile')}',
-              //             style: TextStyle(
-              //               fontSize: 20,
-              //               fontWeight: FontWeight.bold,
-              //             ),
-              //           ),
-              //         ),
-              //       ]),
-              //     )
-              //   ],
-              // ),
             ),
             ListTile(
               title: Text('Logout'),
