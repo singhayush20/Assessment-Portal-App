@@ -406,35 +406,9 @@ class _QuizListPageState extends State<QuizListPage> {
                           ))
                     : Center(
                         child: Container(
-                          color: Colors.white,
                           height: height * 0.8,
                           alignment: Alignment.center,
-                          child: Container(
-                            height: 80,
-                            width: 80,
-                            child: const LoadingIndicator(
-                                indicatorType: Indicator.lineScale,
-                                colors: [
-                                  Colors.purple,
-                                  Colors.indigo,
-                                  Colors.blue,
-                                  Colors.green,
-                                  Colors.red,
-                                ],
-
-                                /// Optional, The color collections
-                                strokeWidth: 1,
-
-                                /// Optional, The stroke of the line, only applicable to widget which contains line
-                                backgroundColor: Colors.white,
-
-                                /// Optional, Background of the widget
-                                pathBackgroundColor: Colors.white
-
-                                /// Optional, the stroke backgroundColor
-
-                                ),
-                          ),
+                          child: DataLoadingIndicator(),
                         ),
                       ),
               ],

@@ -192,35 +192,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     )
                               : Center(
                                   child: Container(
-                                    color: Colors.white,
                                     height: screenSize.maxHeight * 0.8,
                                     alignment: Alignment.center,
-                                    child: Container(
-                                      height: 80,
-                                      width: 80,
-                                      child: const LoadingIndicator(
-                                          indicatorType: Indicator.lineScale,
-                                          colors: [
-                                            Colors.purple,
-                                            Colors.indigo,
-                                            Colors.blue,
-                                            Colors.green,
-                                            Colors.red,
-                                          ],
-
-                                          /// Optional, The color collections
-                                          strokeWidth: 1,
-
-                                          /// Optional, The stroke of the line, only applicable to widget which contains line
-                                          backgroundColor: Colors.white,
-
-                                          /// Optional, Background of the widget
-                                          pathBackgroundColor: Colors.white
-
-                                          /// Optional, the stroke backgroundColor
-
-                                          ),
-                                    ),
+                                    child: DataLoadingIndicator(),
                                   ),
                                 ),
                         ],
@@ -230,27 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 )
               : ((userProvider.loadingStatus == LoadingStatus.LOADING)
                   ? Center(
-                      child: Container(
-                        color: Colors.white,
-                        height: 100,
-                        width: 100,
-                        child: const LoadingIndicator(
-                            indicatorType: Indicator.ballPulse,
-                            colors: [Colors.red, Colors.blue, Colors.green],
-
-                            /// Optional, The color collections
-                            strokeWidth: 1,
-
-                            /// Optional, The stroke of the line, only applicable to widget which contains line
-                            backgroundColor: Colors.white,
-
-                            /// Optional, Background of the widget
-                            pathBackgroundColor: Colors.white
-
-                            /// Optional, the stroke backgroundColor
-
-                            ),
-                      ),
+                      child: DataLoadingIndicator(),
                     )
                   : const Text(
                       'No data',

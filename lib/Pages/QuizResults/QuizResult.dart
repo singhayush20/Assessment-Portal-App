@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:assessmentportal/AppConstants/constants.dart';
 import 'package:assessmentportal/NewtworkUtil/API.dart';
+import 'package:assessmentportal/Pages/Category/HomeScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_indicator/loading_indicator.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -29,10 +30,6 @@ class _QuizResultPageState extends State<QuizResultPage> {
         userId: _sharedPreferences.getInt(USER_ID) ?? 0);
   }
 
-  final AppBar appBar = AppBar(
-    title: Text('Previous Quizzes'),
-  );
-
   @override
   void initState() {
     super.initState();
@@ -45,12 +42,11 @@ class _QuizResultPageState extends State<QuizResultPage> {
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height -
-        appBar.preferredSize.height -
+        AppBar().preferredSize.height -
         MediaQuery.of(context).padding.top -
         MediaQuery.of(context).padding.bottom;
     final width = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: appBar,
       body: FutureBuilder(
           future: _loadHistory(),
           builder: (context, snapshot) {
@@ -88,35 +84,9 @@ class _QuizResultPageState extends State<QuizResultPage> {
             } else {
               return Center(
                 child: Container(
-                  color: Colors.white,
                   height: height * 0.8,
                   alignment: Alignment.center,
-                  child: Container(
-                    height: 80,
-                    width: 80,
-                    child: const LoadingIndicator(
-                        indicatorType: Indicator.lineScale,
-                        colors: [
-                          Colors.purple,
-                          Colors.indigo,
-                          Colors.blue,
-                          Colors.green,
-                          Colors.red,
-                        ],
-
-                        /// Optional, The color collections
-                        strokeWidth: 1,
-
-                        /// Optional, The stroke of the line, only applicable to widget which contains line
-                        backgroundColor: Colors.white,
-
-                        /// Optional, Background of the widget
-                        pathBackgroundColor: Colors.white
-
-                        /// Optional, the stroke backgroundColor
-
-                        ),
-                  ),
+                  child: DataLoadingIndicator(),
                 ),
               );
             }

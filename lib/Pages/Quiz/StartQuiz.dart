@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:assessmentportal/AppConstants/constants.dart';
 import 'package:assessmentportal/DataModel/QuestionModel.dart';
 import 'package:assessmentportal/DataModel/QuizModel.dart';
 import 'package:assessmentportal/Service/QuizService.dart';
@@ -75,28 +76,7 @@ class _StartQuizState extends State<StartQuiz> {
             child: SizedBox(
               height: height * 0.1,
               width: width * 0.15,
-              child: LoadingIndicator(
-                  indicatorType: Indicator.lineScale,
-                  colors: const [
-                    Colors.purple,
-                    Colors.indigo,
-                    Colors.blue,
-                    Colors.green,
-                    Colors.red,
-                  ],
-
-                  /// Optional, The color collections
-                  strokeWidth: 1,
-
-                  /// Optional, The stroke of the line, only applicable to widget which contains line
-                  backgroundColor: Colors.white.withOpacity(1.0),
-
-                  /// Optional, Background of the widget
-                  pathBackgroundColor: Colors.white
-
-                  /// Optional, the stroke backgroundColor
-
-                  ),
+              child: DataLoadingIndicator(),
             ),
           ),
           child: Container(
@@ -184,19 +164,19 @@ class _StartQuizState extends State<StartQuiz> {
                       SizedBox(
                         width: width * 0.3,
                         child: ElevatedButton(
-                          style: Theme.of(context)
-                              .elevatedButtonTheme
-                              .style!
-                              .copyWith(
-                                backgroundColor: (_isquizEvaluated == false)
-                                    ? MaterialStateProperty.all<Color>(
-                                        Color(Colors.red[600]!.value),
-                                      )
-                                    : MaterialStateProperty.all<Color>(
-                                        Color(Color.fromARGB(255, 181, 175, 175)
-                                            .value),
-                                      ),
-                              ),
+                          // style: Theme.of(context)
+                          //     .elevatedButtonTheme
+                          //     .style!
+                          //     .copyWith(
+                          //       backgroundColor: (_isquizEvaluated == false)
+                          //           ? MaterialStateProperty.all<Color>(
+                          //               Color(Colors.red[600]!.value),
+                          //             )
+                          //           : MaterialStateProperty.all<Color>(
+                          //               Color(Color.fromARGB(255, 181, 175, 175)
+                          //                   .value),
+                          //             ),
+                          //     ),
                           onPressed: (_isquizEvaluated == false)
                               ? () {
                                   _onEnd();

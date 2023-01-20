@@ -73,7 +73,7 @@ class _AttemptQuizState extends State<AttemptQuiz> {
                 borderRadius: BorderRadius.all(
                   Radius.circular(20),
                 ),
-                color: Color.fromARGB(255, 255, 192, 192),
+                color: Color.fromARGB(255, 65, 1, 95),
               ),
               child: LayoutBuilder(
                 builder: (context, constraints) {
@@ -154,12 +154,16 @@ class QuizItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: constraints.maxWidth * 0.02,
+      ),
       height: constraints.maxHeight * 0.2,
-      alignment: Alignment.center,
+      alignment: Alignment.centerLeft,
       child: Text(
         '$text',
         style: TextStyle(
-          fontSize: 15.sp,
+          fontSize: 12.sp,
+          color: Colors.white,
         ),
       ),
     );

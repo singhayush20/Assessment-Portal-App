@@ -1,9 +1,13 @@
 import 'dart:developer';
 
+import 'package:assessmentportal/AppConstants/Themes.dart';
+import 'package:assessmentportal/AppConstants/constants.dart';
 import 'package:assessmentportal/NewtworkUtil/API.dart';
 import 'package:assessmentportal/Register%20and%20Login/RegisterDetails.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:loader_overlay/loader_overlay.dart';
+import 'package:sizer/sizer.dart';
 
 class VerifyEmailOTP extends StatefulWidget {
   String? email;
@@ -25,96 +29,141 @@ class _VerifyEmailOTPState extends State<VerifyEmailOTP> {
     final API api = API();
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Container(
-        margin: EdgeInsets.symmetric(
-          horizontal: width * 0.05,
+      appBar: AppBar(
+        title: Text(
+          'Verify OTP',
         ),
-        child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                height: height * 0.1,
-                child: FittedBox(
-                  alignment: Alignment.centerLeft,
+      ),
+      body: LoaderOverlay(
+        useDefaultLoading: false,
+        overlayWidget: Center(
+          child: Container(
+            height: 100,
+            width: 100,
+            child: const CustomLoadingIndicator(),
+          ),
+        ),
+        child: Container(
+          margin: EdgeInsets.symmetric(
+            horizontal: width * 0.05,
+          ),
+          child: Container(
+            child: Column(
+              children: [
+                SizedBox(
+                  height: height * 0.15,
+                ),
+                Container(
+                  height: height * 0.1,
                   child: Text(
-                    'Verify your email.',
+                    'You must have received an OTP on the email you just entered. Enter it here and click verify',
                     style: TextStyle(
                       color: Colors.black,
+                      fontSize: 15.sp,
+                      fontWeight: FontWeight.w800,
                     ),
                   ),
                 ),
-              ),
-              SizedBox(
-                height: height * 0.05,
-              ),
-              Container(
-                height: height * 0.05,
-                child: Text(
-                  'You must have received an OTP on the email you just entered. Enter it here and click verify',
-                  style: TextStyle(
-                    color: Colors.black,
+                Container(
+                  height: height * 0.1,
+                  alignment: Alignment.center,
+                  padding: EdgeInsets.symmetric(
+                    horizontal: 20,
                   ),
-                ),
-              ),
-              Container(
-                height: height * 0.1,
-                alignment: Alignment.center,
-                padding: EdgeInsets.symmetric(
-                  horizontal: 20,
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.lightBlueAccent,
-                ),
-                child: Form(
-                  key: _formKey,
-                  child: TextFormField(
-                    controller: _otpController,
-                    obscureText: false,
-                    cursorColor: Colors.black,
-                    keyboardType: TextInputType.number,
-                    validator: (value) {
-                      if (value!.isEmpty) {
-                        return 'Please enter OTP';
-                      } else {
-                        return null;
-                      }
-                    },
-                    decoration: const InputDecoration(
-                      hintText: "OTP",
-                      prefixIcon: Icon(
-                        FontAwesomeIcons.key,
-                        color: Colors.black,
+                  decoration: boxDecoration,
+                  child: Form(
+                    key: _formKey,
+                    child: TextFormField(
+                      controller: _otpController,
+                      obscureText: false,
+                      cursorColor: Colors.white,
+                      style: TextStyle(color: Colors.white),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return 'Please enter OTP';
+                        } else {
+                          return null;
+                        }
+                      },
+                      decoration: const InputDecoration(
+                        hintText: "OTP",
+                        prefixIcon: Icon(
+                          FontAwesomeIcons.key,
+                          color: Colors.white,
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              SizedBox(
-                height: height * 0.05,
-              ),
-              Container(
-                height: height * 0.05,
-                child: ElevatedButton(
-                  child: FittedBox(
-                    child: Text(
-                      "Verify",
+                SizedBox(
+                  height: height * 0.05,
+                ),
+                Container(
+                  height: height * 0.05,
+                  child: ElevatedButton(
+                    child: FittedBox(
+                      child: Text(
+                        "Verify",
+                        style: TextStyle(
+                          fontSize: 20.sp,
+                        ),
+                      ),
                     ),
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        context.loaderOverlay.show();
+                        Map<String, dynamic> result =
+                            await api.verifyEmailVerificationOTP(
+                                email: widget.email, otp: _otpController.text);
+                        log('email otp verification result: $result');
+                        String? code = result['code'];
+                        context.loaderOverlay.hide();
+                        if (code == '2000') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => RegisterDetails(
+                                email: widget.email!,
+                              ),
+                            ),
+                          );
+                        } else if (code == '2001') {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Verification Failed!'),
+                            ),
+                          );
+                        }
+                      }
+                    },
                   ),
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      Map<String, dynamic> result =
-                          await api.verifyEmailVerificationOTP(
-                              email: widget.email, otp: _otpController.text);
-                      log('email otp verification result: $result');
+                ),
+                SizedBox(
+                  height: height * 0.05,
+                ),
+                Container(
+                  height: height * 0.05,
+                  child: TextButton(
+                    child: FittedBox(
+                      child: Text(
+                        "Didn't receive? Resend.",
+                        style: TextStyle(
+                          fontSize: 15.sp,
+                        ),
+                      ),
+                    ),
+                    onPressed: () async {
+                      context.loaderOverlay.show();
+                      Map<String, dynamic> result = await api
+                          .sendEmailVerificationOTP(email: widget.email!);
+                      context.loaderOverlay.hide();
+                      log('email otp sent again: $result');
                       String? code = result['code'];
                       if (code == '2000') {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => RegisterDetails(
-                              email: widget.email!,
-                            ),
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('OTP Sent!'),
                           ),
                         );
                       } else if (code == '2001') {
@@ -124,43 +173,11 @@ class _VerifyEmailOTPState extends State<VerifyEmailOTP> {
                           ),
                         );
                       }
-                    }
-                  },
-                ),
-              ),
-              SizedBox(
-                height: height * 0.05,
-              ),
-              Container(
-                height: height * 0.05,
-                child: TextButton(
-                  child: FittedBox(
-                    child: Text(
-                      "Didn't receive? Resend.",
-                    ),
+                    },
                   ),
-                  onPressed: () async {
-                    Map<String, dynamic> result = await api
-                        .sendEmailVerificationOTP(email: widget.email!);
-                    log('email otp sent again: $result');
-                    String? code = result['code'];
-                    if (code == '2000') {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('OTP Sent!'),
-                        ),
-                      );
-                    } else if (code == '2001') {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Verification Failed!'),
-                        ),
-                      );
-                    }
-                  },
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

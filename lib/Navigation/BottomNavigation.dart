@@ -39,6 +39,8 @@ class _BottomNavigationState extends State<BottomNavigation> {
     QuizResultPage(),
     ProfilePage(),
   ];
+  final List<String> _screenTitlesNormal = ['Home', 'My Quizzes', 'Profile'];
+  final List<String> _screenTitleAdmin = ['Home', 'Profile'];
   static const List<Widget> _widgetOptionsAdmin = <Widget>[
     HomeScreen(),
     ProfilePage(),
@@ -64,9 +66,18 @@ class _BottomNavigationState extends State<BottomNavigation> {
         appBar.preferredSize.height -
         MediaQuery.of(context).padding.top -
         MediaQuery.of(context).padding.bottom;
+
     return Scaffold(
       drawer: NavigationDrawer(userProvider),
-      appBar: appBar,
+      appBar: AppBar(
+        title: Text((!(userProvider.loadingStatus ==
+                    LoadingStatus.NOT_STARTED ||
+                userProvider.loadingStatus == LoadingStatus.LOADING))
+            ? ((userProvider.accountType == AccountType.NORMAL)
+                ? _screenTitlesNormal[bottomNavigationProvider.selectedIndex]
+                : _screenTitleAdmin[bottomNavigationProvider.selectedIndex])
+            : 'Quizzo'),
+      ),
       bottomNavigationBar:
           (!(userProvider.loadingStatus == LoadingStatus.NOT_STARTED ||
                   userProvider.loadingStatus == LoadingStatus.LOADING))
@@ -106,35 +117,9 @@ class _BottomNavigationState extends State<BottomNavigation> {
                   userProvider.loadingStatus == LoadingStatus.LOADING)
               ? Center(
                   child: Container(
-                    color: Colors.white,
                     height: height * 0.8,
                     alignment: Alignment.center,
-                    child: Container(
-                      height: 80,
-                      width: 80,
-                      child: const LoadingIndicator(
-                          indicatorType: Indicator.lineScale,
-                          colors: [
-                            Colors.purple,
-                            Colors.indigo,
-                            Colors.blue,
-                            Colors.green,
-                            Colors.red,
-                          ],
-
-                          /// Optional, The color collections
-                          strokeWidth: 1,
-
-                          /// Optional, The stroke of the line, only applicable to widget which contains line
-                          backgroundColor: Colors.white,
-
-                          /// Optional, Background of the widget
-                          pathBackgroundColor: Colors.white
-
-                          /// Optional, the stroke backgroundColor
-
-                          ),
-                    ),
+                    child: DataLoadingIndicator(),
                   ),
                 )
               : Container(
