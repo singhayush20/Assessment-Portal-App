@@ -1,3 +1,5 @@
+import 'package:assessmentportal/AppConstants/Themes.dart';
+import 'package:assessmentportal/AppConstants/constants.dart';
 import 'package:assessmentportal/NewtworkUtil/API.dart';
 import 'package:flutter/material.dart';
 import 'package:loading_indicator/loading_indicator.dart';
@@ -145,32 +147,7 @@ class _UserHistoryState extends State<UserHistory> {
                 color: Colors.white,
                 height: height * 0.8,
                 alignment: Alignment.center,
-                child: Container(
-                  height: 80,
-                  width: 80,
-                  child: const LoadingIndicator(
-                      indicatorType: Indicator.lineScale,
-                      colors: [
-                        Colors.purple,
-                        Colors.indigo,
-                        Colors.blue,
-                        Colors.green,
-                        Colors.red,
-                      ],
-
-                      /// Optional, The color collections
-                      strokeWidth: 1,
-
-                      /// Optional, The stroke of the line, only applicable to widget which contains line
-                      backgroundColor: Colors.white,
-
-                      /// Optional, Background of the widget
-                      pathBackgroundColor: Colors.white
-
-                      /// Optional, the stroke backgroundColor
-
-                      ),
-                ),
+                child: DataLoadingIndicator(),
               ),
             );
           }
@@ -198,18 +175,15 @@ class CustomListTile extends StatelessWidget {
             vertical: 5,
           ),
           decoration: BoxDecoration(
-            border: Border.all(
-                color: Colors.black, width: 0.5, style: BorderStyle.solid),
             borderRadius: BorderRadius.all(
               Radius.circular(20),
             ),
-            color: Color(0xFF2E2A50),
           ),
           child: ListTile(
             leading: Text(
               '${index + 1}.',
               style: TextStyle(
-                  color: Color.fromARGB(255, 166, 168, 234),
+                  color: appBarColor,
                   fontSize: 20.sp,
                   fontWeight: FontWeight.w900),
             ),
@@ -227,7 +201,7 @@ class CustomListTile extends StatelessWidget {
                 borderRadius: BorderRadius.all(
                   Radius.circular(20),
                 ),
-                color: Color.fromARGB(255, 249, 104, 126),
+                color: Color.fromARGB(255, 234, 157, 86),
               ),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,

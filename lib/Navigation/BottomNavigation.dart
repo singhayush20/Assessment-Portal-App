@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:assessmentportal/AppConstants/Themes.dart';
 import 'package:assessmentportal/AppConstants/constants.dart';
 import 'package:assessmentportal/Navigation/BottomNavigationProvider.dart';
 import 'package:assessmentportal/Pages/Profile/ProfilePage.dart';
@@ -158,6 +159,7 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Drawer(
+        backgroundColor: Color.fromARGB(255, 219, 139, 49),
         child: ListView(
           children: <Widget>[
             DrawerHeader(
@@ -170,6 +172,8 @@ class _NavigationDrawerState extends State<NavigationDrawer> {
               ),
             ),
             ListTile(
+              textColor: appBarColor,
+              iconColor: appBarColor,
               title: Text('Logout'),
               leading: Icon(
                 FontAwesomeIcons.rightFromBracket,

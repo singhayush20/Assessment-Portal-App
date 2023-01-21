@@ -73,7 +73,7 @@ class _AttemptQuizState extends State<AttemptQuiz> {
                 borderRadius: BorderRadius.all(
                   Radius.circular(20),
                 ),
-                color: Color.fromARGB(255, 65, 1, 95),
+                color: Color.fromARGB(255, 207, 131, 45),
               ),
               child: LayoutBuilder(
                 builder: (context, constraints) {

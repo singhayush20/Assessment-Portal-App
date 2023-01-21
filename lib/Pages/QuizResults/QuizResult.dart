@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:assessmentportal/AppConstants/Themes.dart';
 import 'package:assessmentportal/AppConstants/constants.dart';
 import 'package:assessmentportal/NewtworkUtil/API.dart';
 import 'package:assessmentportal/Pages/Category/HomeScreen.dart';
@@ -111,18 +112,16 @@ class CustomListTile extends StatelessWidget {
         vertical: 5,
       ),
       decoration: BoxDecoration(
-        border: Border.all(
-            color: Colors.black, width: 0.5, style: BorderStyle.solid),
         borderRadius: BorderRadius.all(
           Radius.circular(20),
         ),
-        color: Color(0xFF2E2A50),
+        color: scaffoldColor,
       ),
       child: ListTile(
         leading: Text(
           '${index + 1}.',
           style: TextStyle(
-              color: Color.fromARGB(255, 166, 168, 234),
+              color: Colors.purple,
               fontSize: 20.sp,
               fontWeight: FontWeight.w900),
         ),
@@ -140,7 +139,7 @@ class CustomListTile extends StatelessWidget {
             borderRadius: BorderRadius.all(
               Radius.circular(20),
             ),
-            color: Color(0xFFFD7F92),
+            color: Color.fromARGB(255, 240, 120, 45),
           ),
           child: Text(
             '${quiz['quiz']['title']}',
@@ -162,7 +161,7 @@ class CustomListTile extends StatelessWidget {
             borderRadius: BorderRadius.all(
               Radius.circular(20),
             ),
-            color: Color(0xFF1AC3A1),
+            color: Color.fromARGB(255, 114, 38, 219),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -204,7 +203,7 @@ class CustomQuizHistorySubtitleItem extends StatelessWidget {
               title,
               style: TextStyle(
                 // color: Color.fromARGB(255, 218, 234, 229),
-                color: Colors.black,
+                color: Color.fromARGB(255, 216, 212, 212),
                 fontWeight: FontWeight.w700,
                 fontSize: 12.sp,
               ),

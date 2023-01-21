@@ -150,7 +150,7 @@ class _QuizListPageState extends State<QuizListPage> {
                                   borderRadius: BorderRadius.all(
                                     Radius.circular(20),
                                   ),
-                                  color: Color(0xFFBDDBF2),
+                                  color: Color.fromARGB(255, 219, 139, 49),
                                 ),
                                 child: ListTile(
                                   onTap: () {

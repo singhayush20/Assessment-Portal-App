@@ -21,7 +21,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
     return Scaffold(
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.red,
         onPressed: () {
           Navigator.push(
             context,
@@ -34,7 +33,6 @@ class _ProfilePageState extends State<ProfilePage> {
           FontAwesomeIcons.pen,
         ),
       ),
-      backgroundColor: Colors.white,
       body: LayoutBuilder(
         builder: (context, screenSize) {
           return Padding(
@@ -44,29 +42,13 @@ class _ProfilePageState extends State<ProfilePage> {
                     userProvider.loadingStatus == LoadingStatus.NOT_STARTED)
                 ? Center(
                     child: Container(
-                      color: Colors.white,
-                      height: 100,
-                      width: 100,
-                      child: LoadingIndicator(
-                          indicatorType: Indicator.ballPulse,
-                          colors: [Colors.red, Colors.blue, Colors.green],
-
-                          /// Optional, The color collections
-                          strokeWidth: 1,
-
-                          /// Optional, The stroke of the line, only applicable to widget which contains line
-                          backgroundColor: Colors.white,
-
-                          /// Optional, Background of the widget
-                          pathBackgroundColor: Colors.white
-
-                          /// Optional, the stroke backgroundColor
-
-                          ),
-                    ),
+                        height: 100, width: 100, child: DataLoadingIndicator()),
                   )
                 : Column(
                     children: [
+                      SizedBox(
+                        height: screenSize.maxHeight * 0.05,
+                      ),
                       Container(
                         alignment: Alignment.center,
                         height: screenSize.maxHeight * 0.2,
@@ -127,9 +109,6 @@ class _ProfilePageState extends State<ProfilePage> {
                                     ['roleName']),
                           ],
                         ),
-                      ),
-                      SizedBox(
-                        height: screenSize.maxHeight * 0.05,
                       ),
                     ],
                   ),

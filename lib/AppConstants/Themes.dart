@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 ThemeData lightThemeData = ThemeData(
+  floatingActionButtonTheme: FloatingActionButtonThemeData(
+    backgroundColor: appBarColor,
+    shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+            topLeft: Radius.circular(20), bottomRight: Radius.circular(20))),
+  ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ElevatedButton.styleFrom(
       shape: RoundedRectangleBorder(
@@ -42,9 +48,9 @@ ThemeData lightThemeData = ThemeData(
   scaffoldBackgroundColor: scaffoldColor,
   //====BOTTOM NAVIGATION Theme
   bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-    backgroundColor: Colors.white,
-    selectedItemColor: Colors.red,
-    unselectedItemColor: Colors.black,
+    backgroundColor: appBarColor,
+    selectedItemColor: Colors.white,
+    unselectedItemColor: scaffoldColor,
     showSelectedLabels: true,
     showUnselectedLabels: true,
     type: BottomNavigationBarType.fixed,
@@ -80,7 +86,7 @@ ThemeData lightThemeData = ThemeData(
   ),
 );
 
-const Color appBarColor = Color(0xFF4A148C);
+const Color appBarColor = Color.fromARGB(255, 74, 20, 140);
 const Color scaffoldColor = Color(0xFFF3E5F5);
 const Color appBarItemColor = Colors.white;
 BoxDecoration boxDecoration = BoxDecoration(

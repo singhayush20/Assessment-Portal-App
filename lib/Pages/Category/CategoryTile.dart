@@ -53,7 +53,7 @@ class CategoryTile extends StatelessWidget {
                   borderRadius: BorderRadius.all(
                     Radius.circular(20),
                   ),
-                  color: Colors.lightGreenAccent,
+                  color: Color.fromARGB(255, 219, 139, 49),
                 ),
                 alignment: Alignment.center,
                 child: LayoutBuilder(
@@ -73,7 +73,7 @@ class CategoryTile extends StatelessWidget {
                                   20,
                                 ),
                               ),
-                              color: Colors.lightGreen,
+                              color: Color.fromARGB(255, 237, 147, 44),
                             ),
                             child: Stack(
                               children: [

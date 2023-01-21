@@ -74,7 +74,7 @@ class _HomeScreenState extends State<HomeScreen> {
           //         userProvider.accountType == AccountType.ADMIN)
           (userProvider.loadingStatus == LoadingStatus.COMPLETED)
               ? FloatingActionButton(
-                  backgroundColor: Colors.red,
+                  // backgroundColor: Colors.red,
                   onPressed: () {
                     if (userProvider.accountType != null &&
                         userProvider.accountType == AccountType.ADMIN) {
@@ -103,15 +103,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 )
               : null,
       backgroundColor: Colors.white,
-      body: LayoutBuilder(
-        builder: (context, screenSize) {
-          return (userProvider.loadingStatus == LoadingStatus.COMPLETED)
-              ? RefreshIndicator(
-                  onRefresh: _loadCategories,
-                  child: SingleChildScrollView(
+      body: RefreshIndicator(
+        onRefresh: _loadCategories,
+        child: LayoutBuilder(
+          builder: (context, screenSize) {
+            return (userProvider.loadingStatus == LoadingStatus.COMPLETED)
+                ? SingleChildScrollView(
                     physics: AlwaysScrollableScrollPhysics(),
                     child: Container(
-                      height: screenSize.maxHeight,
                       margin: EdgeInsets.symmetric(
                           horizontal: screenSize.maxWidth * 0.05),
                       child: Column(
@@ -200,20 +199,20 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                     ),
-                  ),
-                )
-              : ((userProvider.loadingStatus == LoadingStatus.LOADING)
-                  ? Center(
-                      child: DataLoadingIndicator(),
-                    )
-                  : const Text(
-                      'No data',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ));
-        },
+                  )
+                : ((userProvider.loadingStatus == LoadingStatus.LOADING)
+                    ? Center(
+                        child: DataLoadingIndicator(),
+                      )
+                    : const Text(
+                        'No data',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ));
+          },
+        ),
       ),
     );
   }
