@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:assessmentportal/AppConstants/Themes.dart';
 import 'package:assessmentportal/AppConstants/constants.dart';
 import 'package:assessmentportal/DataModel/QuestionModel.dart';
 import 'package:assessmentportal/DataModel/QuizModel.dart';
@@ -92,7 +93,7 @@ class _QuizQuestionsPageState extends State<QuizQuestionsPage> {
         body: (_areQuestionsLoaded == QuestionLoadingStatus.COMPLETED)
             ? (questions.isNotEmpty)
                 ? ListView.builder(
-                    physics: NeverScrollableScrollPhysics(),
+                    physics: AlwaysScrollableScrollPhysics(),
                     itemCount: questions.length,
                     itemBuilder: (context, index) {
                       return Container(
@@ -104,10 +105,10 @@ class _QuizQuestionsPageState extends State<QuizQuestionsPage> {
                             borderRadius: const BorderRadius.all(
                               Radius.circular(20),
                             ),
-                            color: Color.fromARGB(255, 244, 223, 223),
+                            color: Color.fromARGB(255, 239, 148, 105),
                           ),
                           margin: EdgeInsets.only(left: 5, right: 5, top: 5),
-                          height: height * 0.2,
+                          height: height * 0.25,
                           child: CustomListTile(
                             question: questions[index],
                             index: index,
@@ -129,35 +130,30 @@ class _QuizQuestionsPageState extends State<QuizQuestionsPage> {
                   )
             : Center(
                 child: Container(
-                  color: Colors.white,
-                  height: height * 0.8,
-                  alignment: Alignment.center,
-                  child: Container(
-                    height: 80,
-                    width: 80,
-                    child: const LoadingIndicator(
-                        indicatorType: Indicator.lineScale,
-                        colors: [
-                          Colors.purple,
-                          Colors.indigo,
-                          Colors.blue,
-                          Colors.green,
-                          Colors.red,
-                        ],
+                  height: 80,
+                  width: 80,
+                  child: const LoadingIndicator(
+                      indicatorType: Indicator.lineScale,
+                      colors: [
+                        Colors.purple,
+                        Colors.indigo,
+                        Colors.blue,
+                        Colors.green,
+                        Colors.red,
+                      ],
 
-                        /// Optional, The color collections
-                        strokeWidth: 1,
+                      /// Optional, The color collections
+                      strokeWidth: 1,
 
-                        /// Optional, The stroke of the line, only applicable to widget which contains line
-                        backgroundColor: Colors.white,
+                      /// Optional, The stroke of the line, only applicable to widget which contains line
+                      backgroundColor: scaffoldColor,
 
-                        /// Optional, Background of the widget
-                        pathBackgroundColor: Colors.white
+                      /// Optional, Background of the widget
+                      pathBackgroundColor: Colors.white
 
-                        /// Optional, the stroke backgroundColor
+                      /// Optional, the stroke backgroundColor
 
-                        ),
-                  ),
+                      ),
                 ),
               ));
   }
@@ -187,21 +183,26 @@ class _CustomListTileState extends State<CustomListTile> {
         return Padding(
           padding: EdgeInsets.symmetric(
             horizontal: constraints.maxWidth * 0.05,
-            vertical: constraints.maxHeight * 0.05,
+            vertical: constraints.maxHeight * 0.025,
           ),
           child: Stack(
             children: [
               Column(children: [
                 Container(
+                  alignment: Alignment.centerLeft,
                   height: constraints.maxHeight * 0.2,
-                  child: Container(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      '${widget.index + 1}. ${widget.question.content}',
-                      style:
-                          TextStyle(fontWeight: FontWeight.w600, fontSize: 20),
+                  child: Text(
+                    '${widget.index + 1}. ${widget.question.content}',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 15,
                     ),
                   ),
+                ),
+                SizedBox(
+                  height: constraints.maxHeight * 0.05,
                 ),
                 Container(
                   height: constraints.maxHeight * 0.7,
@@ -239,54 +240,49 @@ class _CustomListTileState extends State<CustomListTile> {
               ]),
               (widget.role != ROLE_NORMAL)
                   ? Positioned(
-                      right: 0.5,
-                      child: Container(
-                        height: constraints.maxHeight * 0.2,
-                        alignment: Alignment.center,
-                        child: PopupMenuButton(
-                          itemBuilder: (context) {
-                            return [
-                              const PopupMenuItem<int>(
-                                value: 0,
-                                child: Text("Delete"),
-                              ),
-                              const PopupMenuItem<int>(
-                                value: 1,
-                                child: Text("Update"),
-                              ),
-                            ];
-                          },
-                          onSelected: (value) async {
-                            if (value == 0) {
-                              //delete
-                              final QuestionService questionService =
-                                  QuestionService();
-                              String code =
-                                  await questionService.deleteQuestion(
-                                      token: widget.token,
-                                      questionId:
-                                          widget.question.questionId ?? 0);
-                              if (code == '2000') {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text(
-                                            'Question deleted successfully')));
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                        content: Text('Question not deleted')));
-                              }
-                            } else if (value == 1) {
-                              //update
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => UpdateQuestionPage(
-                                          question: widget.question,
-                                          token: widget.token)));
+                      top: 0.01,
+                      right: 0.05,
+                      child: PopupMenuButton(
+                        itemBuilder: (context) {
+                          return [
+                            const PopupMenuItem<int>(
+                              value: 0,
+                              child: Text("Delete"),
+                            ),
+                            const PopupMenuItem<int>(
+                              value: 1,
+                              child: Text("Update"),
+                            ),
+                          ];
+                        },
+                        onSelected: (value) async {
+                          if (value == 0) {
+                            //delete
+                            final QuestionService questionService =
+                                QuestionService();
+                            String code = await questionService.deleteQuestion(
+                                token: widget.token,
+                                questionId: widget.question.questionId ?? 0);
+                            if (code == '2000') {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text(
+                                          'Question deleted successfully')));
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                      content: Text('Question not deleted')));
                             }
-                          },
-                        ),
+                          } else if (value == 1) {
+                            //update
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => UpdateQuestionPage(
+                                        question: widget.question,
+                                        token: widget.token)));
+                          }
+                        },
                       ),
                     )
                   : Container(),
@@ -318,13 +314,25 @@ class QuestionChoice extends StatelessWidget {
           alignment: Alignment.center,
           decoration: BoxDecoration(
             border: Border.all(
-                color: Colors.black, width: 0.5, style: BorderStyle.solid),
+                color: Colors.black, width: 0.1, style: BorderStyle.solid),
             borderRadius: const BorderRadius.all(
-              Radius.circular(20),
+              Radius.circular(10),
             ),
-            color: Color.fromARGB(255, 128, 200, 243),
+            color: Color.fromARGB(255, 165, 83, 233),
           ),
-          child: Text(choice),
+          height: constraints.maxHeight * 1,
+          child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: 5,
+                vertical: 5,
+              ),
+              child: Text(
+                choice,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                ),
+              )),
         );
       },
     );

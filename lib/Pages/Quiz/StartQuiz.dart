@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:assessmentportal/AppConstants/Themes.dart';
 import 'package:assessmentportal/AppConstants/constants.dart';
 import 'package:assessmentportal/DataModel/QuestionModel.dart';
 import 'package:assessmentportal/DataModel/QuizModel.dart';
@@ -9,7 +10,6 @@ import 'package:flutter_countdown_timer/countdown_timer_controller.dart';
 
 import 'package:flutter_countdown_timer/flutter_countdown_timer.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import 'package:loading_indicator/loading_indicator.dart';
 import 'package:sizer/sizer.dart';
 
 class StartQuiz extends StatefulWidget {
@@ -42,7 +42,8 @@ class _StartQuizState extends State<StartQuiz> {
       title = widget.quizModel.title;
       int quizTimeInMin = widget.quizModel.time;
       log('Time for quiz: $quizTimeInMin');
-      _endTime = DateTime.now().millisecondsSinceEpoch + 1 * 60 * 1000;
+      _endTime =
+          DateTime.now().millisecondsSinceEpoch + quizTimeInMin * 60 * 1000;
     });
     _controller = CountdownTimerController(endTime: _endTime, onEnd: _onEnd);
   }
@@ -86,116 +87,106 @@ class _StartQuizState extends State<StartQuiz> {
             child: Column(
               children: [
                 Container(
-                  height: height * 0.1,
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          'Max Marks: ${widget.quizModel.maxMarks}',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          'Questions: ${widget.quizModel.numberOfQuestions}',
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            fontSize: 15.sp,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  height: height * 0.05,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      SizedBox(
-                        width: width * 0.5,
-                        child: Row(
-                          children: [
-                            Text(
-                              'Time:  ',
-                              textAlign: TextAlign.left,
-                              style: TextStyle(
-                                fontSize: 15.sp,
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            CountdownTimer(
-                              controller: _controller,
-                              widgetBuilder: (_, time) {
-                                if (time == null) {
-                                  return Text(
-                                    'Ended!',
-                                    style: TextStyle(
-                                      fontSize: 15.sp,
-                                      color: Colors.red,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  );
-                                }
-                                String timeStr;
-
-                                return Text(
-                                  '${(time.min != null) ? time.min : 0} min ${(time.sec != null) ? time.sec : 0} sec',
+                    color: scaffoldColor,
+                    child: Column(
+                      children: [
+                        Container(
+                          height: height * 0.1,
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Text(
+                                  'Max Marks: ${widget.quizModel.maxMarks}',
+                                  textAlign: TextAlign.left,
                                   style: TextStyle(
                                     fontSize: 15.sp,
-                                    fontWeight: FontWeight.bold,
-                                    color: (time.min == null ||
-                                            (time.min != null &&
-                                                time.min! <= 1))
-                                        ? Colors.red
-                                        : Colors.green,
+                                    fontWeight: FontWeight.w600,
                                   ),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        width: width * 0.3,
-                        child: ElevatedButton(
-                          // style: Theme.of(context)
-                          //     .elevatedButtonTheme
-                          //     .style!
-                          //     .copyWith(
-                          //       backgroundColor: (_isquizEvaluated == false)
-                          //           ? MaterialStateProperty.all<Color>(
-                          //               Color(Colors.red[600]!.value),
-                          //             )
-                          //           : MaterialStateProperty.all<Color>(
-                          //               Color(Color.fromARGB(255, 181, 175, 175)
-                          //                   .value),
-                          //             ),
-                          //     ),
-                          onPressed: (_isquizEvaluated == false)
-                              ? () {
-                                  _onEnd();
-                                }
-                              : null,
-                          child: Text(
-                            'Finish',
-                            style: TextStyle(
-                              fontSize: 18.sp,
-                            ),
+                                ),
+                              ),
+                              Expanded(
+                                child: Text(
+                                  'Questions: ${widget.quizModel.numberOfQuestions}',
+                                  textAlign: TextAlign.right,
+                                  style: TextStyle(
+                                    fontSize: 15.sp,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: height * 0.05,
-                ),
+                        Container(
+                          height: height * 0.05,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              SizedBox(
+                                width: width * 0.5,
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      'Time:  ',
+                                      textAlign: TextAlign.left,
+                                      style: TextStyle(
+                                        fontSize: 15.sp,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    CountdownTimer(
+                                      controller: _controller,
+                                      widgetBuilder: (_, time) {
+                                        if (time == null) {
+                                          return Text(
+                                            'Ended!',
+                                            style: TextStyle(
+                                              fontSize: 15.sp,
+                                              color: Colors.red,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          );
+                                        }
+                                        String timeStr;
+
+                                        return Text(
+                                          '${(time.min != null) ? time.min : 0} min ${(time.sec != null) ? time.sec : 0} sec',
+                                          style: TextStyle(
+                                            fontSize: 15.sp,
+                                            fontWeight: FontWeight.bold,
+                                            color: (time.min == null ||
+                                                    (time.min != null &&
+                                                        time.min! <= 1))
+                                                ? Colors.red
+                                                : Colors.green,
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              SizedBox(
+                                width: width * 0.3,
+                                child: ElevatedButton(
+                                  onPressed: (_isquizEvaluated == false)
+                                      ? () {
+                                          _onEnd();
+                                        }
+                                      : null,
+                                  child: Text(
+                                    'Finish',
+                                    style: TextStyle(
+                                      fontSize: 18.sp,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    )),
                 Container(
                   height: height * 0.80,
                   child: ListView.separated(

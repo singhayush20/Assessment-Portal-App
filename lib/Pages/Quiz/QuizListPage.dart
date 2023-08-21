@@ -88,6 +88,12 @@ class _QuizListPageState extends State<QuizListPage> {
                     bottom: 5,
                   ),
                   child: ElevatedButton(
+                    style:
+                        Theme.of(context).elevatedButtonTheme.style!.copyWith(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                Color.fromARGB(255, 239, 106, 34),
+                              ),
+                            ),
                     onPressed: () {
                       Navigator.push(
                         context,
@@ -111,11 +117,12 @@ class _QuizListPageState extends State<QuizListPage> {
       body: RefreshIndicator(
         onRefresh: _loadQuizzes,
         child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
+          physics: const AlwaysScrollableScrollPhysics(),
           child: Container(
             padding: EdgeInsets.symmetric(
               horizontal: width * 0.05,
             ),
+            height: height,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [

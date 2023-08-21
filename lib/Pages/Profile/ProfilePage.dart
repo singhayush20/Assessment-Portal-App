@@ -3,7 +3,6 @@ import 'package:assessmentportal/Pages/Profile/EditUserDetails.dart';
 import 'package:assessmentportal/provider/UserProvider.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:loading_indicator/loading_indicator.dart';
 import 'package:provider/provider.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -81,11 +80,8 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: screenSize.maxHeight * 0.05,
-                      ),
                       Container(
-                        height: screenSize.maxHeight * 0.65,
+                        height: screenSize.maxHeight * 0.55,
                         child: Column(
                           children: [
                             //==NAME==

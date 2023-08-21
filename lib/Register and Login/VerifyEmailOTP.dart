@@ -28,7 +28,6 @@ class _VerifyEmailOTPState extends State<VerifyEmailOTP> {
     final double height = MediaQuery.of(context).size.height;
     final API api = API();
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text(
           'Verify OTP',
@@ -47,14 +46,16 @@ class _VerifyEmailOTPState extends State<VerifyEmailOTP> {
           margin: EdgeInsets.symmetric(
             horizontal: width * 0.05,
           ),
-          child: Container(
+          height: height,
+          child: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
             child: Column(
               children: [
                 SizedBox(
                   height: height * 0.15,
                 ),
                 Container(
-                  height: height * 0.1,
+                  height: height * 0.15,
                   child: Text(
                     'You must have received an OTP on the email you just entered. Enter it here and click verify',
                     style: TextStyle(
@@ -63,6 +64,9 @@ class _VerifyEmailOTPState extends State<VerifyEmailOTP> {
                       fontWeight: FontWeight.w800,
                     ),
                   ),
+                ),
+                SizedBox(
+                  height: height * 0.05,
                 ),
                 Container(
                   height: height * 0.1,

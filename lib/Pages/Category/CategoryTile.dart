@@ -190,7 +190,7 @@ class CategoryTile extends StatelessWidget {
                         Container(
                           alignment: Alignment.center,
                           padding: const EdgeInsets.symmetric(
-                            horizontal: 5,
+                            horizontal: 10,
                           ),
                           height: size.maxHeight * 0.3,
                           child: Text(
@@ -198,6 +198,7 @@ class CategoryTile extends StatelessWidget {
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                             ),
+                            textAlign: TextAlign.center,
                           ),
                         ),
                       ],
